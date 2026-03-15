@@ -16,11 +16,47 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from . views import gemeindenuebersicht, gemeinde_neu, gemeinde_bearbeiten, gemeinde_loeschen 
+from . views import gemeindenuebersicht, gemeinde_add, gemeinde_edit, gemeinde_delete
+from . views import orggliederungstiefe_uebersicht, orggliederungstiefe_add, orggliederungstiefe_edit, orggliederungstiefe_delete
+from . views import organisationseinheiten_uebersicht, organisationseinheiten_add, organisationseinheiten_edit, organisationseinheiten_delete
+from . views import aufgaben_uebersicht, aufgaben_add, aufgaben_edit, aufgaben_delete
+from . views import gvp_uebersicht, gvp_add, gvp_edit, gvp_delete
+from . views import taetigkeitenorg_uebersicht, taetigkeitenorg_add, taetigkeitenorg_edit, taetigkeitenorg_delete
 
 urlpatterns = [
-    path('', gemeindenuebersicht, name='gemeindenuebersicht'),
-    path('neu/', gemeinde_neu, name='gemeinde_neu'),
-    path('bearbeiten/<int:id>/', gemeinde_bearbeiten, name='gemeinde_bearbeiten'),
-    path('loeschen/<int:id>/', gemeinde_loeschen, name='gemeinde_loeschen'),
-]
+    path('gemeinden/', gemeindenuebersicht, name='gemeindenuebersicht'),
+    path('gemeinden/add/', gemeinde_add, name='gemeinde_add'),
+    path('gemeinden/edit/<int:id>/', gemeinde_edit, name='gemeinde_edit'),
+    path('gemeinden/delete/<int:id>/', gemeinde_delete, name='gemeinde_delete'),
+    
+    # CRUD OrgGliederungstiefe
+    path('orggliederungstiefe/', orggliederungstiefe_uebersicht, name='orggliederungstiefe_uebersicht'),
+    path('orggliederungstiefe/add/', orggliederungstiefe_add, name='orggliederungstiefe_add'),
+    path('orggliederungstiefe/edit/<int:id>/', orggliederungstiefe_edit, name='orggliederungstiefe_edit'),
+    path('orggliederungstiefe/delete/<int:id>/', orggliederungstiefe_delete, name='orggliederungstiefe_delete'),
+
+    # CRUD Organsationseinheiten
+    path('organisationseinheiten/', organisationseinheiten_uebersicht, name='organisationseinheiten_uebersicht'),
+    path('organisationseinheiten/add/', organisationseinheiten_add, name='organisationseinheiten_add'),
+    path('organisationseinheiten/edit/<int:id>/', organisationseinheiten_edit, name='organisationseinheiten_edit'),
+    path('organisationseinheiten/delete/<int:id>/', organisationseinheiten_delete, name='organisationseinheiten_delete'),
+
+    #CRUD AUfgaben
+    path('aufgaben/', aufgaben_uebersicht, name='aufgaben_uebersicht'),
+    path('aufgaben/add/', aufgaben_add, name='aufgaben_add'),
+    path('aufgaben/edit/<int:id>/', aufgaben_edit, name='aufgaben_edit'),
+    path('aufgaben/delete/<int:id>/', aufgaben_delete, name='aufgaben_delete'),
+    
+    # CRUD GVP model = GVP
+    path('gvp/', gvp_uebersicht, name='gvp_uebersicht'),
+    path('gvp/add/', gvp_add, name='gvp_add'),
+    path('gvp/edit/<int:id>/', gvp_edit, name='gvp_edit'),
+    path('gvp/delete/<int:id>/', gvp_delete, name='gvp_delete'),
+
+    # CRUD Taetigkeiten Organisationseinheiten model = TaetigkeitenOrg
+    path('taetigkeitenorg/', taetigkeitenorg_uebersicht, name='taetigkeitenorg_uebersicht'),
+    path('taetigkeitenorg/add/', taetigkeitenorg_add, name='taetigkeitenorg_add'),
+    path('taetigkeitenorg/edit/<int:id>/', taetigkeitenorg_edit, name='taetigkeitenorg_edit'),
+    path('taetigkeitenorg/delete/<int:id>/', taetigkeitenorg_delete, name='taetigkeitenorg_delete'),
+    
+]   
