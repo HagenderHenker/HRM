@@ -1,0 +1,15 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Willkommen bei KomStar!</h2>
+
+<p>Hier können Sie die Organisationsstruktur Ihrer Gemeinde verwalten.</p>
+<p>Wählen Sie eine der folgenden Optionen:</p>
+<ul>
+    <li><a href="{% url 'gemeindenuebersicht' %}">Gemeinden verwalten</a></li>
+    <li><a href="{% url 'stellenuebersicht' %}">Stellen verwalten</a></li>
+    <li><a href="{% url 'personaluebersicht' %}">Mitarbeiter verwalten</a></li>
+</ul>
+{% endblock %}
+

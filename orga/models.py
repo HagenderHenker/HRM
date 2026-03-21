@@ -1,4 +1,5 @@
 from django.db import models
+from treebeard.mp_tree import MP_Node
 #from stellenplan.models import Teilhaushalte, Stellenplan
 
 # Referenz- und Lookup-Tabellen
@@ -7,7 +8,11 @@ class Gemeinden(models.Model):
     """Mandantenfähigkeit – ermöglicht Verwaltung mehrerer Gemeinden."""
     gemeindenummer = models.IntegerField(unique=True, verbose_name="Gemeindenummer")
     gemeinde = models.CharField(max_length=255, verbose_name="Gemeindename")
-
+    arbeitgebernummerPPA = models.CharField(max_length=50, null=True, blank=True, verbose_name="Arbeitgebernummer PPA")
+    arbeitgebernummerZVK = models.CharField(max_length=50, null=True, blank=True, verbose_name="Arbeitgebernummer ZVK")
+    arbeitgebernummerRV = models.CharField(max_length=50, null=True, blank=True, verbose_name="Arbeitgebernummer RV")
+    aktiv = models.BooleanField(default=True, verbose_name="Aktiv")
+    gueltig_bis = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=True, verbose_name="Gültig bis")
     class Meta:
         db_table = 'Gemeinden'
         verbose_name = 'Gemeinde'
@@ -29,7 +34,7 @@ class OrgGliederungstiefe(models.Model):
     def __str__(self):
         return f"{self.gliederungstiefe} – {self.bezeichnung}"
     
-class Organisationseinheiten(models.Model):
+class Organisationseinheiten(MP_Node):
     """
     Organisationsstruktur der Gemeinde (Ämter, Abteilungen, Teams).
     Selbstreferenz über ueber_org für hierarchische Darstellung.
@@ -44,7 +49,9 @@ class Organisationseinheiten(models.Model):
     stab = models.BooleanField(default=False, verbose_name="Stabsstelle")
     gemeinde = models.ForeignKey(Gemeinden, on_delete=models.PROTECT, verbose_name="Gemeinde")
     jahr = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=True, verbose_name="Gültig ab")
-
+    aktiv = models.BooleanField(default=True, verbose_name="Aktiv")
+    gueltig_bis = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=True, verbose_name="Gültig bis")
+    
     class Meta:
         db_table = 'Organisationseinheiten'
         verbose_name = 'Organisationseinheit'
@@ -56,15 +63,24 @@ class Organisationseinheiten(models.Model):
 
 class Aufgaben(models.Model):
     """Aufgabenportfolio der Gemeinde (Aufgabenkatalog)."""
+
+    AUFGABENPFLICHTTYPEN = [
+        ('PflichtSV', 'Pflichtaufgabe der Selbstverwaltung'),
+        ('FreiwilligSV', 'Freiwillige Aufgabe der Selbstverwaltung'),
+        ('Auftrag', 'Auftragsangelegenheit'),
+        ('Management', 'Managementaufgabe'),
+        ('Sonstige', 'Sonstige Aufgabe'),
+    ]
     aufg_gliederung = models.CharField(max_length=50, null=True, blank=True, verbose_name="Gliederungsnummer")
     errichtung = models.DateTimeField(null=True, blank=True, verbose_name="Aufgenommen am")
     aufgabe_bez = models.CharField(max_length=255, null=True, blank=True, verbose_name="Aufgabenbezeichnung")
     grundlage = models.CharField(max_length=255, null=True, blank=True, verbose_name="Rechtsgrundlage")
     aufg_beschreibung = models.CharField(max_length=500, null=True, blank=True, verbose_name="Beschreibung")
     aufgabentyp = models.CharField(max_length=100, null=True, blank=True, verbose_name="Aufgabentyp")
+    aufgabenverpflichtung = models.CharField(max_length=50, choices=AUFGABENPFLICHTTYPEN, null=True, blank=True, verbose_name="Aufgabenverpflichtung")
     gv_zuordnung = models.IntegerField(null=True, blank=True, verbose_name="Geschäftsverteilung")
     verkn_vg = models.CharField(max_length=100, null=True, blank=True, verbose_name="Verknüpfte VG")
-
+    
     class Meta:
         db_table = 'Aufgaben'
         verbose_name = 'Aufgabe'
@@ -73,7 +89,7 @@ class Aufgaben(models.Model):
     def __str__(self):
         return f"{self.aufg_gliederung} – {self.aufgabe_bez}"
 
-class Geschaeftsverteilung(models.Model):
+class Geschaeftsverteilung(MP_Node):
     """Geschäftsverteilungsplan der Gemeinde."""
     gvid = models.IntegerField(verbose_name="GV-ID")
     gemeinde = models.ForeignKey(Gemeinden, on_delete=models.PROTECT, verbose_name="Gemeinde")

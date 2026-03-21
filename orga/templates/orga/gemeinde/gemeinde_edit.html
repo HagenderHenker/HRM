@@ -1,0 +1,21 @@
+<tr>
+    <form action="" method="post" hx-post="" hx-target="closest tr" hx-swap="outerHTML">
+            {% csrf_token %}
+           
+                <tr>
+                    <td>{{ form.gemeindenummer.label }}: {{ form.gemeindenummer }}</td>
+                    <td>{{ form.gemeinde.label }}: {{ form.gemeinde }}</td>
+                    <td>{{ form.arbeitgebernummerPPA.label }}: {{ form.arbeitgebernummerPPA }}</td>
+                    <td>{{ form.arbeitgebernummerZVK.label }}: {{ form.arbeitgebernummerZVK }}</td>
+                    <td>{{ form.arbeitgebernummerRV.label }}: {{ form.arbeitgebernummerRV }}</td>
+                    <td>{{ form.aktiv.label }}: {{ form.aktiv }}</td>
+                    <td>{{ form.gueltig_bis.label }}: {{ form.gueltig_bis }}</td>
+                    <td>
+                        <button type="submit">Speichern</button>
+                        <a href="{% url 'gemeindenuebersicht' %}" 
+                           hx-get="{% url 'gemeindenuebersicht' %}" 
+                           hx-target="closest tbody">Abbrechen</a>
+                    </td>
+                </tr>       
+     </form>
+</tr>

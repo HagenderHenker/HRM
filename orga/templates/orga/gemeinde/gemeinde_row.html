@@ -1,0 +1,19 @@
+    <tr>
+        <td>{{ gemeinde.gemeindenummer }}</td>
+        <td>{{ gemeinde.gemeinde }}</td>
+        <td>{{ gemeinde.arbeitgebernummerPPA }}</td>
+        <td>{{ gemeinde.arbeitgebernummerZVK }}</td>
+        <td>{{ gemeinde.arbeitgebernummerRV }}</td>
+        <td>{{ gemeinde.aktiv }}</td>
+        <td>{{ gemeinde.gueltig_bis }}</td>
+
+
+        <td>
+            <a href="{% url 'gemeinde_edit' gemeinde.id %}" 
+               hx-get="{% url 'gemeinde_edit' gemeinde.id %}" 
+               hx-target="closest tr" 
+               hx-swap="outerHTML">Bearbeiten</a>
+            
+            <a href="{% url 'gemeinde_delete' gemeinde.id %}">Löschen</a>
+        </td>
+    </tr>

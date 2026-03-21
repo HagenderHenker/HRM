@@ -1,4 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponse
+from .models import Gemeinden, OrgGliederungstiefe, Organisationseinheiten, Aufgaben, Geschaeftsverteilung, TaetigkeitenORG
+from .forms import GemeindenForm
 
 
 # Create your views here.
@@ -6,16 +9,40 @@ from django.shortcuts import render
 # CRUD GEMEINDEN
 
 def gemeindenuebersicht(request):
-    return render(request, 'orga/gemeindeuebersicht.html')
+
+    gemeinden = Gemeinden.objects.all()
+
+
+
+    return render(request, 'orga/gemeinde/gemeindeuebersicht.html', {'gemeinden': gemeinden})
 
 def gemeinde_add(request):
-    return render(request, 'orga/gemeinde_add.html')
+    return render(request, 'orga/gemeinde/gemeinde_add.html')
 
 def gemeinde_edit(request, id):
-    return render(request, 'orga/gemeinde_edit.html', {'id': id})
+    
+    print(request.method)
+    gde = get_object_or_404(Gemeinden, id=id)
+    
+    if request.method == 'POST':
+        print("post request received")
+        form = GemeindenForm(request.POST, instance=gde)
+        if form.is_valid():
+            print("form is valid")
+            gde = form.save()
+            if request.headers.get('HX-Request'):
+                return render(request, 'orga/gemeinde/gemeindeuebersicht.html#gdetablerow', {'gemeinde': gde})
+            return redirect('gemeindenuebersicht')
+        else:
+            print("form is not valid")
+            return HttpResponse('alles doof gelaufen')
+    else:
+        form = GemeindenForm(instance=gde)
+    
+    return render(request, 'orga/gemeinde/gemeindeuebersicht.html#gdetable_edit', {'gemeinde': gde, 'form': form})
 
 def gemeinde_delete(request, id):
-    return render(request, 'orga/gemeinde_delete.html', {'id': id})
+    return render(request, 'orga/gemeinde/gemeinde_delete.html', {'id': id})
 
 # CRUD OrgGliederungstiefe
 

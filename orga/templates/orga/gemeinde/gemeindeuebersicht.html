@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% load static %}
+
+{% partialdef gdetablerow %}
+    <tr>
+        <td>{{ gemeinde.gemeindenummer }}</td>
+        <td>{{ gemeinde.gemeinde }}</td>
+        <td>{{ gemeinde.arbeitgebernummerPPA }}</td>
+        <td>{{ gemeinde.arbeitgebernummerZVK }}</td>
+        <td>{{ gemeinde.arbeitgebernummerRV }}</td>
+        <td>{{ gemeinde.aktiv }}</td>
+        <td>{{ gemeinde.gueltig_bis }}</td>
+
+
+        <td>
+            <a href="{% url 'gemeinde_edit' gemeinde.id %}" 
+               hx-get="{% url 'gemeinde_edit' gemeinde.id %}" 
+               hx-target="closest tr" 
+               hx-swap="outerHTML">Bearbeiten</a>
+            
+            <a href="{% url 'gemeinde_delete' gemeinde.id %}">Löschen</a>
+        </td>
+    </tr>
+
+
+{% endpartialdef %}
+
+{% partialdef gdetable_edit %}
+
+<tr>
+    <form action="" method="post" >
+            {% csrf_token %}
+           
+                    <td>{{ form.gemeindenummer.label }}: {{ form.gemeindenummer }}</td>
+                    <td>{{ form.gemeinde.label }}: {{ form.gemeinde }}</td>
+                    <td>{{ form.arbeitgebernummerPPA.label }}: {{ form.arbeitgebernummerPPA }}</td>
+                    <td>{{ form.arbeitgebernummerZVK.label }}: {{ form.arbeitgebernummerZVK }}</td>
+                    <td>{{ form.arbeitgebernummerRV.label }}: {{ form.arbeitgebernummerRV }}</td>
+                    <td>{{ form.aktiv.label }}: {{ form.aktiv }}</td>
+                    <td>{{ form.gueltig_bis.label }}: {{ form.gueltig_bis }}</td>
+                    <td>
+                        <button type="submit"
+                            hx-post="{% url 'gemeinde_edit' gemeinde.id %}" 
+                            hx-target="closest tr" 
+                            hx-swap="outerHTML"
+                        >Speichern</button>
+                        
+                        <a href="{% url 'gemeindenuebersicht' %}" 
+                           hx-get="{% url 'gemeindenuebersicht' %}" 
+                           hx-target="closest body"
+                           hx-swap = "outerHTML"
+                           >Abbrechen
+                        </a>
+                           
+                    </td>      
+     </form>
+</tr>
+
+{% endpartialdef %}
+
+
+<h1>Gemeinden</h1>
+
+<a href="{% url 'gemeinde_add' %}">Neue Gemeinde hinzufügen</a>
+
+<table style="width:100%; border-collapse: collapse;" border="1">
+    <tr>
+        <th>Gemeindenummer</th>
+        <th>Name</th>
+        <th>Arbeitgebernummer PPA</th>
+        <th>Arbeitgebernummer ZVK</th>
+        <th>Arbeitgebernummer RV</th>
+        <th>Aktiv</th>
+        <th>Gültig bis</th>
+        <th>Aktionen</th>
+    </tr>
+    {% for gemeinde in gemeinden %}
+    <tr id="gdetablerow-{{ gemeinde.id }}">
+        <td>{{ gemeinde.gemeindenummer }}</td>
+        <td>{{ gemeinde.gemeinde }}</td>
+        <td>{{ gemeinde.arbeitgebernummerPPA }}</td>
+        <td>{{ gemeinde.arbeitgebernummerZVK }}</td>
+        <td>{{ gemeinde.arbeitgebernummerRV }}</td>
+        <td>{{ gemeinde.aktiv }}</td>
+        <td>{{ gemeinde.gueltig_bis }}</td>
+
+
+        <td>
+            <a href="{% url 'gemeinde_edit' gemeinde.id %}" 
+               hx-get="{% url 'gemeinde_edit' gemeinde.id %}" 
+               hx-target="#gdetablerow-{{ gemeinde.id }}" 
+               hx-swap="outerHTML">Bearbeiten</a>
+
+            <a href="{% url 'gemeinde_delete' gemeinde.id %}">Löschen</a>
+        </td>
+    </tr>
+    {% endfor %}   
+</table>
+{% endblock %}
