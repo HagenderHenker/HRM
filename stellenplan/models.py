@@ -16,6 +16,34 @@ class Stellenarten(models.Model):
 
     def __str__(self):
         return self.stellenart_bez
+    
+class HHJGDE(models.Model):
+    """Haushaltsjahre für die Planung."""
+    haushaltsjahr = models.IntegerField(verbose_name="Haushaltsjahr", unique=True)
+    start = models.DateField(verbose_name="Startdatum")
+    ende = models.DateField(verbose_name="Enddatum")
+    gemeinde = models.ForeignKey(Gemeinden, on_delete=models.PROTECT, verbose_name="Gemeinde")
+
+    class Meta:
+        db_table = 'Haushaltsjahre'
+        verbose_name = 'Haushaltsjahr'
+        verbose_name_plural = 'Haushaltsjahre'
+
+    def __str__(self):
+        return str(self.haushaltsjahr)
+
+class Sollaederungsgrund(models.Model):
+    """Gründe für Solländerungen im Stellenplan (z.B. Neubewertung, Umwandlung)."""
+    grund_code = models.SmallIntegerField(verbose_name="Grund-Code")
+    grund_bez = models.CharField(max_length=255, verbose_name="Bezeichnung")
+
+    class Meta:
+        db_table = 'Sollaederungsgruende'
+        verbose_name = 'Solländerungsgrund'
+        verbose_name_plural = 'Solländerungsgründe'
+
+    def __str__(self):
+        return self.grund_bez
   
 class Haushalte(models.Model):
     """Haushaltspläne je Gemeinde und Haushaltsjahr."""
@@ -104,8 +132,8 @@ class Stellenplan(models.Model):
     Stellenplan gemäß §5 GemHVO RLP.
     Enthält die genehmigten Stellen je Haushaltsjahr.
     """
-    haushaltsjahr = models.IntegerField(verbose_name="Haushaltsjahr")
-    gemeinde = models.ForeignKey('orga.Gemeinden', on_delete=models.PROTECT, verbose_name="Gemeinde")
+
+    HHJGDE = models.ForeignKey(HHJGDE, on_delete=models.PROTECT, null=True, blank=True, verbose_name="Haushaltsjahr (HHJGDE)")
     stelle_nr = models.CharField(max_length=50, verbose_name="Stellennummer")
     stelle_nr_vj = models.CharField(max_length=50, null=True, blank=True, verbose_name="Stellennummer Vorjahr")
     bezeichnung = models.CharField(max_length=255, verbose_name="Stellenbezeichnung")
@@ -129,7 +157,7 @@ class Stellenplan(models.Model):
         db_table = 'Stellenplan'
         verbose_name = 'Stelle'
         verbose_name_plural = 'Stellenplan'
-        unique_together = [('haushaltsjahr', 'gemeinde', 'stelle_nr')]
+        unique_together = [('HHJGDE', 'stelle_nr')]
 
     def __str__(self):
         return f"{self.stelle_nr} - {self.bezeichnung} - ({self.haushaltsjahr})"
@@ -161,11 +189,13 @@ class StellenplanSoll(models.Model):
     buchungsdatum = models.DateField(verbose_name="Buchungsdatum", auto_now_add=False, auto_now=False)
     erfassungsdatum = models.DateTimeField(auto_now_add=True, auto_now=False, verbose_name="Erfassungsdatum")   
     stelle = models.ForeignKey(Stellenplan, on_delete=models.CASCADE, verbose_name="Stelle")
+    HHJGDE = models.ForeignKey(HHJGDE, on_delete=models.PROTECT, null=True, blank=True, verbose_name="Haushaltsjahr (HHJGDE)")
     #haushaltsjahr = models.IntegerField(verbose_name="Haushaltsjahr")
     #plan = models.CharField(max_length=50, null=True, blank=True, verbose_name="Plan-Variante")
     plan = models.ForeignKey(Haushalte, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Haushaltsplan")
     stellensoll_hhj = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, verbose_name="Stellensoll HHJ (Anteile VZAE)")
     aend_stellensoll_hhj = models.DecimalField(max_digits=5, decimal_places=2,null=True, blank=True, verbose_name="Änderung Stellensoll")
+    soll_aend_grund = models.ForeignKey(Sollaederungsgrund, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Grund der Solländerung")
     aend_ab = models.DateTimeField(null=True, blank=True, verbose_name="Änderung gültig ab")
     ps_bemerkungen = models.CharField(max_length=500, null=True, blank=True, verbose_name="Bemerkungen")
 
