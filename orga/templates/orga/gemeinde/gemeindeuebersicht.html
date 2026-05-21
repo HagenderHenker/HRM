@@ -1,10 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
 
-{% load static %}
+
+{% partialdef reorderbutton %}
+<button hx-post="{% url 'gemeindenuebersicht' %}"
+        hx-target="#gdetable"
+        hx-swap="outerHTML">
+    Reihenfolge anzeigen
+</button>
+{% endpartialdef %}
 
 {% partialdef gdetablerow %}
-    <tr>
+<!--
+<tr>
         <td>{{ gemeinde.gemeindenummer }}</td>
         <td>{{ gemeinde.gemeinde }}</td>
         <td>{{ gemeinde.arbeitgebernummerPPA }}</td>
@@ -23,12 +31,60 @@
             <a href="{% url 'gemeinde_delete' gemeinde.id %}">Löschen</a>
         </td>
     </tr>
-
+-->
+        <div class="row" id="gdetablerow-{{ gemeinde.id }}">
+            <div class="cell">{{ gemeinde.gemeindenummer }}</div>
+            <div class="cell">{{ gemeinde.gemeinde }}</div>
+            <div class="cell">{{ gemeinde.Koerperschaftstyp }}</div>
+            <div class="cell">{{ gemeinde.arbeitgebernummerPPA }}</div>
+            <div class="cell">{{ gemeinde.arbeitgebernummerZVK }}</div>
+            <div class="cell">{{ gemeinde.arbeitgebernummerRV }}</div>
+            <div class="cell">{{ gemeinde.aktiv|yesno:"Ja,Nein" }}</div>
+            <div class="cell">{{ gemeinde.gueltig_bis }}</div>
+            <div class="cell">
+                    <p><a hx-get="{% url 'gemeinde_edit' gemeinde.id %}"
+                    hx-target="#gdetablerow-{{ gemeinde.id }}"
+                    hx-swap="outerHTML">Bearbeiten</a></p>
+                    <p><a hx-get="{% url 'gemeinde_delete' gemeinde.id %}"
+                    hx-target="#gdetablerow-{{ gemeinde.id }}"
+                    hx-swap="outerHTML">Löschen</a></p>
+                </div>
+        </div>
 
 {% endpartialdef %}
 
-{% partialdef gdetable_edit %}
+{% partialdef gdetable_add %}
 
+<div class="row" id="gde_add_row">    
+
+    <form hx-post="{% url 'gemeinde_add' %}"
+          hx-target="#gde_add_row"
+          hx-swap="outerHTML"
+          style="display:contents">
+        {% csrf_token %}
+
+        <div class="cell">{{ form.gemeindenummer }}</div>
+        <div class="cell">{{ form.gemeinde }}</div>
+        <div class="cell">{{ form.Koerperschaftstyp }}</div>
+        <div class="cell">{{ form.arbeitgebernummerPPA }}</div>
+        <div class="cell">{{ form.arbeitgebernummerZVK }}</div>
+        <div class="cell">{{ form.arbeitgebernummerRV }}</div>
+        <div class="cell">{{ form.aktiv }}</div>
+        <div class="cell">{{ form.gueltig_bis }}</div>
+        <div class="cell">
+            <button type="submit">Speichern</button>
+            <p><a hx-get="{% url 'gemeinde_add' %}"
+               hx-target="#gde_add_row"
+               hx-swap="outerHTML">Abbrechen</a></p>
+        </div>
+    </form>
+</div>
+
+{% endpartialdef %}
+
+
+{% partialdef gdetable_edit %}
+<!--
 <tr>
     <form action="" method="post" >
             {% csrf_token %}
@@ -57,45 +113,81 @@
                     </td>      
      </form>
 </tr>
-
+-->
+<div class="row" id="gdetablerow-{{ gemeinde.id }}">    
+    <form hx-post="{% url 'gemeinde_edit' gemeinde.id %}"
+          hx-target="#gdetablerow-{{ gemeinde.id }}"
+          hx-swap="outerHTML"
+          style="display:contents">
+        {% csrf_token %}
+        <div class="cell">{{ form.gemeindenummer }}</div>
+        <div class="cell">{{ form.gemeinde }}</div>
+        <div class="cell">{{ form.Koerperschaftstyp }}</div>
+        <div class="cell">{{ form.arbeitgebernummerPPA }}</div>
+        <div class="cell">{{ form.arbeitgebernummerZVK }}</div>
+        <div class="cell">{{ form.arbeitgebernummerRV }}</div>
+        <div class="cell">{{ form.aktiv }}</div>
+        <div class="cell">{{ form.gueltig_bis }}</div>
+        <div class="cell">
+            <button type="submit">Speichern</button>
+            <p><a hx-get="{% url 'gemeinde_edit' gemeinde.id %}"
+               hx-target="#gdetablerow-{{ gemeinde.id }}"
+               hx-swap="outerHTML">Abbrechen</a></p>
+        </div>
+    </form>
+</div>
+ 
 {% endpartialdef %}
 
 
 <h1>Gemeinden</h1>
 
-<a href="{% url 'gemeinde_add' %}">Neue Gemeinde hinzufügen</a>
-
-<table style="width:100%; border-collapse: collapse;" border="1">
-    <tr>
-        <th>Gemeindenummer</th>
-        <th>Name</th>
-        <th>Arbeitgebernummer PPA</th>
-        <th>Arbeitgebernummer ZVK</th>
-        <th>Arbeitgebernummer RV</th>
-        <th>Aktiv</th>
-        <th>Gültig bis</th>
-        <th>Aktionen</th>
-    </tr>
-    {% for gemeinde in gemeinden %}
-    <tr id="gdetablerow-{{ gemeinde.id }}">
-        <td>{{ gemeinde.gemeindenummer }}</td>
-        <td>{{ gemeinde.gemeinde }}</td>
-        <td>{{ gemeinde.arbeitgebernummerPPA }}</td>
-        <td>{{ gemeinde.arbeitgebernummerZVK }}</td>
-        <td>{{ gemeinde.arbeitgebernummerRV }}</td>
-        <td>{{ gemeinde.aktiv }}</td>
-        <td>{{ gemeinde.gueltig_bis }}</td>
+<a  hx-get="{% url 'gemeinde_add' %}"
+    hx-target="#newgemeindeform"
+    hx-swap="outerHTML"
+    >Neue Gemeinde hinzufügen</a>
 
 
-        <td>
-            <a href="{% url 'gemeinde_edit' gemeinde.id %}" 
-               hx-get="{% url 'gemeinde_edit' gemeinde.id %}" 
-               hx-target="#gdetablerow-{{ gemeinde.id }}" 
-               hx-swap="outerHTML">Bearbeiten</a>
 
-            <a href="{% url 'gemeinde_delete' gemeinde.id %}">Löschen</a>
-        </td>
-    </tr>
-    {% endfor %}   
-</table>
+
+
+<div class="table">
+    <div class="thead">
+        <div class="row">
+            <div class="cell">Gemeindenummer</div>
+            <div class="cell">Name</div>
+            <div class="cell">Arbeitgebernummer PPA</div>
+            <div class="cell">Arbeitgebernummer ZVK</div>
+            <div class="cell">Arbeitgebernummer RV</div>
+            <div class="cell">Aktiv</div>
+            <div class="cell">Gültig bis</div>            
+            <div class="cell">Aktionen</div>
+        </div>
+    </div>
+
+    <div class="tbody">
+        {% for gemeinde in gemeinden %}
+        <div class="row" id="gdetablerow-{{ gemeinde.id }}">
+            <div class="cell">{{ gemeinde.gemeindenummer }}</div>
+            <div class="cell">{{ gemeinde.gemeinde }}</div>
+            <div class="cell">{{ gemeinde.Koerperschaftstyp }}</div>
+            <div class="cell">{{ gemeinde.arbeitgebernummerPPA }}</div>
+            <div class="cell">{{ gemeinde.arbeitgebernummerZVK }}</div>
+            <div class="cell">{{ gemeinde.arbeitgebernummerRV }}</div>
+            <div class="cell">{{ gemeinde.aktiv|yesno:"Ja,Nein" }}</div>
+            <div class="cell">{{ gemeinde.gueltig_bis }}</div>
+            <div class="cell">
+                <p><a hx-get="{% url 'gemeinde_edit' gemeinde.id %}"
+                   hx-target="#gdetablerow-{{ gemeinde.id }}"
+                   hx-swap="outerHTML">Bearbeiten</a></p>
+                <a hx-get="{% url 'gemeinde_delete' gemeinde.id %}"
+                   hx-target="#gdetablerow-{{ gemeinde.id }}"
+                   hx-swap="outerHTML">Löschen</a></p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div id="newgemeindeform"></div>
+</div>
+
 {% endblock %}

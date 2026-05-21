@@ -1,21 +1,48 @@
-<tr>
-    <form action="" method="post" hx-post="" hx-target="closest tr" hx-swap="outerHTML">
-            {% csrf_token %}
-           
-                <tr>
-                    <td>{{ form.gemeindenummer.label }}: {{ form.gemeindenummer }}</td>
-                    <td>{{ form.gemeinde.label }}: {{ form.gemeinde }}</td>
-                    <td>{{ form.arbeitgebernummerPPA.label }}: {{ form.arbeitgebernummerPPA }}</td>
-                    <td>{{ form.arbeitgebernummerZVK.label }}: {{ form.arbeitgebernummerZVK }}</td>
-                    <td>{{ form.arbeitgebernummerRV.label }}: {{ form.arbeitgebernummerRV }}</td>
-                    <td>{{ form.aktiv.label }}: {{ form.aktiv }}</td>
-                    <td>{{ form.gueltig_bis.label }}: {{ form.gueltig_bis }}</td>
-                    <td>
-                        <button type="submit">Speichern</button>
-                        <a href="{% url 'gemeindenuebersicht' %}" 
-                           hx-get="{% url 'gemeindenuebersicht' %}" 
-                           hx-target="closest tbody">Abbrechen</a>
-                    </td>
-                </tr>       
-     </form>
+<!--
+<tr hx-post="{% url 'gemeinde_edit' gemeinde.id %}"
+    hx-target="closest tr"
+    hx-swap="outerHTML"
+    hx-trigger="submit"
+    id="gdetablerow-{{ gemeinde.id }}">
+
+    {% csrf_token %}
+
+    <td>{{ form.gemeindenummer.label }}<br>{{ form.gemeindenummer }}</td>
+    <td>{{ form.gemeinde.label }}<br>{{ form.gemeinde }}</td>
+    <td>{{ form.arbeitgebernummerPPA.label }}<br>{{ form.arbeitgebernummerPPA }}</td>
+    <td>{{ form.arbeitgebernummerZVK.label }}<br>{{ form.arbeitgebernummerZVK }}</td>
+    <td>{{ form.arbeitgebernummerRV.label }}<br>{{ form.arbeitgebernummerRV }}</td>
+    <td>{{ form.aktiv.label }}<br>{{ form.aktiv }}</td>
+    <td>{{ form.gueltig_bis.label }}<br>{{ form.gueltig_bis }}</td>
+    <td>
+        <button type="submit">Speichern</button>
+        <a hx-get="{% url 'gemeinde_edit' gemeinde.id %}"
+           hx-target="#gdetablerow-{{ gemeinde.id }}"
+           hx-swap="outerHTML">Abbrechen</a>
+    </td>
+</tr>
+-->
+
+<!-- Form außerhalb der Tabelle -->
+
+<tr hx-post="{% url 'gemeinde_edit' gemeinde.id %}"
+    hx-target="#gdetablerow-{{ gemeinde.id }}"
+    hx-swap="outerHTML"
+    hx-trigger="click from:button[type='submit']"
+    hx-include="find input, find select"
+    id="gdetablerow-{{ gemeinde.id }}">
+
+    <td style="display:none">{% csrf_token %}</td>
+    <td>{{ form.gemeindenummer.label }}<br>{{ form.gemeindenummer }}</td>
+    <td>{{ form.gemeinde.label }}<br>{{ form.gemeinde }}</td>
+    <td>{{ form.arbeitgebernummerPPA.label }}<br>{{ form.arbeitgebernummerPPA }}</td>
+    <td>{{ form.arbeitgebernummerZVK.label }}<br>{{ form.arbeitgebernummerZVK }}</td>
+    <td>{{ form.aktiv.label }}<br>{{ form.aktiv }}</td>
+    <td>{{ form.gueltig_bis.label }}<br>{{ form.gueltig_bis }}</td>
+    <td>
+        <button type="submit">Speichern</button>
+        <a hx-get="{% url 'gemeinde_edit' gemeinde.id %}"
+           hx-target="#gdetablerow-{{ gemeinde.id }}"
+           hx-swap="outerHTML">Abbrechen</a>
+    </td>
 </tr>

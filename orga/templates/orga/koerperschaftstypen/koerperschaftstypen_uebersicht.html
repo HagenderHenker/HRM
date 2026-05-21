@@ -1,0 +1,115 @@
+<!-- orga/templates/orga/koerperschaftstypen/koerperschaftstypen_uebersicht.html -->
+
+<!--
+  Template für die Übersicht der Körperschaftstypen.
+  Zeigt eine Liste aller Körperschaftstypen mit Optionen zum Bearbeiten und Löschen.
+  Ermöglicht das Hinzufügen neuer Körperschaftstypen über ein Formular.
+-->
+
+{% extends 'base.html' %}
+{% block content %}
+
+<!--________________ -->
+<!--  Partials -->
+<!--________________ -->
+
+{% partialdef koerperschaftstypen_add_form %}
+
+<div class="row" id="koerperschaftstypen_add_form">
+
+    <form hx-post="{% url 'koerperschaftstypen_add' %}"
+          hx-target="#koerperschaftstypen_add_form"
+          hx-swap="outerHTML"
+          style="display:contents">
+
+        {% csrf_token %}
+
+        <div class="cell">{{ form.typ }}</div>
+        <div class="cell">{{ form.typ_kurz }}</div>
+        <div class="cell">{{ form.bezbehoerdenleiter }}</div>
+        <div class="cell">{{ form.prefix }}</div>
+        <div class="cell"><button type="submit">Hinzufügen</button></div>
+    </form>
+</div>
+
+{% endpartialdef %}
+
+
+{% partialdef koerperschaftstypen_edit_form %}
+
+
+
+{% endpartialdef %}
+
+
+{% partialdef koerperschaftstypen_delete_form %}
+
+
+{% endpartialdef %}
+
+
+{% partialdef koerperschaftstypen_row %}
+        <div class="row" id="kttablerow-{{ koerperschaftstyp.id }}">
+            <div class="cell">{{ koerperschaftstyp.typ }}</div>
+            <div class="cell">{{ koerperschaftstyp.typ_kurz }}</div>
+            <div class="cell">{{ koerperschaftstyp.bezbehoerdenleiter }}</div>
+            <div class="cell">{{ koerperschaftstyp.prefix }}</div>
+
+            <div class="cell">
+                <p><a hx-get="{% url 'koerperschaftstypen_edit' koerperschaftstyp.id %}"
+                   hx-target="#kttablerow-{{ koerperschaftstyp.id }}"
+                   hx-swap="outerHTML">Bearbeiten</a></p>
+
+                <p><a href="{% url 'koerperschaftstypen_delete' koerperschaftstyp.id %}">Löschen</a></p>
+            </div>
+        </div>
+
+{% endpartialdef %}
+
+
+
+<!--________________ -->
+<!-- MAIN CONTENT -->
+<!--________________ -->
+
+<h1>Koerperschaftstypen</h1>
+
+<p><a  hx-get="{% url 'koerperschaftstypen_add' %}"
+    hx-target="#newkoerperschaftstypform"
+    hx-swap="outerHTML"
+    ><b>Neuen Körperschaftstyp hinzufügen</b></a></p>
+<p></p>
+<div class="table">
+    <div class="thead">
+        <div class="row">
+            <div class="cell">Körperschaftstyp</div>
+            <div class="cell">Kürzel</div>
+            <div class="cell">Bezeichnung Behördenleiter</div> 
+            <div class="cell">Präfix</div>
+            <div class="cell">Aktionen</div>
+        </div>
+    </div>
+
+    <div class="tbody">
+        {% for koerperschaftstyp in koerperschaftstypen %}
+        <div class="row" id="kttablerow-{{ koerperschaftstyp.id }}">
+            <div class="cell">{{ koerperschaftstyp.typ }}</div>
+            <div class="cell">{{ koerperschaftstyp.typ_kurz }}</div>
+            <div class="cell">{{ koerperschaftstyp.bezbehoerdenleiter }}</div>
+            <div class="cell">{{ koerperschaftstyp.prefix }}</div>
+
+            <div class="cell">
+                <p><a hx-get="{% url 'koerperschaftstypen_edit' koerperschaftstyp.id %}"
+                   hx-target="#kttablerow-{{ koerperschaftstyp.id }}"
+                   hx-swap="outerHTML">Bearbeiten</a></p>
+
+                <p><a href="{% url 'koerperschaftstypen_delete' koerperschaftstyp.id %}">Löschen</a></p>
+            </div>
+        </div>
+        {% endfor %} 
+        </div>
+        <div id="newkoerperschaftstypform"></div>       
+    </div>
+   
+
+{% endblock %}

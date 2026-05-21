@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from . views import koerperschaftstypenuebersicht, koerperschaftstypen_add, koerperschaftstypen_edit, koerperschaftstypen_delete
 from . views import gemeindenuebersicht, gemeinde_add, gemeinde_edit, gemeinde_delete
 from . views import orggliederungstiefe_uebersicht, orggliederungstiefe_add, orggliederungstiefe_edit, orggliederungstiefe_delete
 from . views import organisationseinheiten_uebersicht, organisationseinheiten_add, organisationseinheiten_edit, organisationseinheiten_delete
@@ -24,6 +25,13 @@ from . views import gvp_uebersicht, gvp_add, gvp_edit, gvp_delete
 from . views import taetigkeitenorg_uebersicht, taetigkeitenorg_add, taetigkeitenorg_edit, taetigkeitenorg_delete
 
 urlpatterns = [
+    # CRUD Koerperschaftstypen
+    path('koerperschaftstypen/', koerperschaftstypenuebersicht, name='koerperschaftstypenuebersicht'),
+    path('koerperschaftstypen/add/', koerperschaftstypen_add, name='koerperschaftstypen_add'),
+    path('koerperschaftstypen/edit/<int:id>/', koerperschaftstypen_edit, name='koerperschaftstypen_edit'),
+    path('koerperschaftstypen/delete/<int:id>/', koerperschaftstypen_delete, name='koerperschaftstypen_delete'),
+
+    # CRUD Gemeinden
     path('gemeinden/', gemeindenuebersicht, name='gemeindenuebersicht'),
     path('gemeinden/add/', gemeinde_add, name='gemeinde_add'),
     path('gemeinden/edit/<int:id>/', gemeinde_edit, name='gemeinde_edit'),

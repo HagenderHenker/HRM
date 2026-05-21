@@ -1,32 +1,62 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from .models import Gemeinden, OrgGliederungstiefe, Organisationseinheiten, Aufgaben, Geschaeftsverteilung, TaetigkeitenORG
-from .forms import GemeindenForm
+from .forms import GemeindenForm, KoerperschaftstypenForm
 
 
 # Create your views here.
+
+# CRUD Koerperschaftstypen
+
+def koerperschaftstypenuebersicht(request):
+    return render(request, 'orga/koerperschaftstypen/koerperschaftstypen_uebersicht.html')
+
+def koerperschaftstypen_add(request):
+
+    print(request.method)
+    if request.method == 'GET':
+        form = KoerperschaftstypenForm()
+        return render(request, 'orga/koerperschaftstypen/koerperschaftstypen_uebersicht.html#koerperschaftstypen_add_form', {'form': form})
+    
+    if request.method == 'POST':
+        form = KoerperschaftstypenForm(request.POST)
+
+        if form.is_valid():
+            print("form is valid")
+            ktyp = form.save()
+            if request.headers.get('HX-Request'):
+                return render(request, 'orga/koerperschaftstypen/koerperschaftstypen_uebersicht.html#koerperschaftstypen_row', {'ktyp': ktyp})
+            return redirect('koerperschaftstypenuebersicht')
+        else:
+            print("form is not valid")
+            return HttpResponse('alles doof gelaufen')
+
+    return render(request, 'orga/koerperschaftstypen/koerperschaftstypen_uebersicht.html')
+
+def koerperschaftstypen_edit(request, id):
+    return render(request, 'orga/koerperschaftstypen/koerperschaftstypen_uebersicht.html#koerperschaftstypen_edit_form', {'id': id})
+
+def koerperschaftstypen_delete(request, id):
+    return render(request, 'orga/koerperschaftstypen/koerperschaftstypen_uebersicht.html#koerperschaftstypen_delete_form', {'id': id})
+
+
 
 # CRUD GEMEINDEN
 
 def gemeindenuebersicht(request):
 
-    gemeinden = Gemeinden.objects.all()
-
-
-
+    gemeinden = Gemeinden.objects.all().order_by('gemeindenummer')
+    
     return render(request, 'orga/gemeinde/gemeindeuebersicht.html', {'gemeinden': gemeinden})
 
 def gemeinde_add(request):
-    return render(request, 'orga/gemeinde/gemeinde_add.html')
-
-def gemeinde_edit(request, id):
-    
-    print(request.method)
-    gde = get_object_or_404(Gemeinden, id=id)
+    if request.method == 'GET':
+        form = GemeindenForm()
+        return render(request, 'orga/gemeinde/gemeindeuebersicht.html#gdetable_add', {'form': form})
     
     if request.method == 'POST':
-        print("post request received")
-        form = GemeindenForm(request.POST, instance=gde)
+        form = GemeindenForm(request.POST)
+
         if form.is_valid():
             print("form is valid")
             gde = form.save()
@@ -36,6 +66,26 @@ def gemeinde_edit(request, id):
         else:
             print("form is not valid")
             return HttpResponse('alles doof gelaufen')
+
+    return render(request, 'orga/gemeindeuebersicht.html#gdetable_add')
+
+def gemeinde_edit(request, id):
+    
+    gde = get_object_or_404(Gemeinden, id=id)
+    
+    if request.method == 'POST':
+        print("post request received")
+        form = GemeindenForm(request.POST, instance=gde)
+
+        if form.is_valid():
+            print("form is valid")
+            gde = form.save()
+            if request.headers.get('HX-Request'):
+                return render(request, 'orga/gemeinde/gemeindeuebersicht.html#gdetablerow', {'gemeinde': gde})
+            return redirect('gemeindenuebersicht')
+        else:
+           
+            return HttpResponse('alles doof gelaufen')
     else:
         form = GemeindenForm(instance=gde)
     
@@ -43,6 +93,8 @@ def gemeinde_edit(request, id):
 
 def gemeinde_delete(request, id):
     return render(request, 'orga/gemeinde/gemeinde_delete.html', {'id': id})
+
+
 
 # CRUD OrgGliederungstiefe
 

@@ -3,11 +3,25 @@ from treebeard.mp_tree import MP_Node
 #from stellenplan.models import Teilhaushalte, Stellenplan
 
 # Referenz- und Lookup-Tabellen
+class Koerperschaftstypen(models.Model):
+    """Körperschaftstypen (z.B. Stadt, Gemeinde, Landkreis)."""
+    typ = models.CharField(max_length=50, unique=True, verbose_name="Körperschaftstyp")
+    typ_kurz = models.CharField(max_length=20, null=True, blank=True, verbose_name="Kürzel")
+    bezbehoerdenleiter = models.CharField(max_length=50, null=True, blank=True, verbose_name="Bezeichnung Behördenleiter")
+    prefix = models.CharField(max_length=10, null=True, blank=True, verbose_name="Präfix (z.B. Stdt., Lkr.)")
+    class Meta:
+        db_table = 'Koerperschaftstypen'
+        verbose_name = 'Körperschaftstyp'
+
+    def __str__(self):
+        return self.typ
+
 
 class Gemeinden(models.Model):
     """Mandantenfähigkeit – ermöglicht Verwaltung mehrerer Gemeinden."""
     gemeindenummer = models.IntegerField(unique=True, verbose_name="Gemeindenummer")
     gemeinde = models.CharField(max_length=255, verbose_name="Gemeindename")
+    Koerperschaftstyp = models.ForeignKey(Koerperschaftstypen, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Körperschaftstyp")
     arbeitgebernummerPPA = models.CharField(max_length=50, null=True, blank=True, verbose_name="Arbeitgebernummer PPA")
     arbeitgebernummerZVK = models.CharField(max_length=50, null=True, blank=True, verbose_name="Arbeitgebernummer ZVK")
     arbeitgebernummerRV = models.CharField(max_length=50, null=True, blank=True, verbose_name="Arbeitgebernummer RV")
