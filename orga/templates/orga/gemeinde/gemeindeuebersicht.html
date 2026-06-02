@@ -10,6 +10,19 @@
 </button>
 {% endpartialdef %}
 
+{% partialdef delete_confirmation %}
+<div class="delete-confirmation" id="delete-confirmation-{{ gemeinde.id }}">
+<h3>Sind Sie sicher, dass diese Gemeinde gelöscht werden soll? </h3>    
+<p>Der Löschvorgang kann nicht rückgängig gemacht werden und wirkt sich möglicherweise auf bestehende Datensätze aus.</p>
+    <button hx-post="{% url 'gemeinde_delete' gemeinde.id %}"
+            hx-target="#gdetable"
+            hx-swap="outerHTML">
+        Ja
+    </button>
+    <a href="#" onclick="return confirm('Are you sure?')">Nein</a>
+</div>
+{% endpartialdef %}
+
 {% partialdef gdetablerow %}
 <!--
 <tr>
@@ -46,8 +59,10 @@
                     hx-target="#gdetablerow-{{ gemeinde.id }}"
                     hx-swap="outerHTML">Bearbeiten</a></p>
                     <p><a hx-get="{% url 'gemeinde_delete' gemeinde.id %}"
-                    hx-target="#gdetablerow-{{ gemeinde.id }}"
-                    hx-swap="outerHTML">Löschen</a></p>
+                    hx-target="#delete-confirmation-{{ gemeinde.id }}"
+                    hx-swap="outerHTML"
+                   
+                    > Löschen</a></p>
                 </div>
         </div>
 
@@ -73,8 +88,8 @@
         <div class="cell">{{ form.gueltig_bis }}</div>
         <div class="cell">
             <button type="submit">Speichern</button>
-            <p><a hx-get="{% url 'gemeinde_add' %}"
-               hx-target="#gde_add_row"
+            <p><a hx-get="{% url 'gemeindenuebersicht' %}"
+               hx-target="#gdetable"
                hx-swap="outerHTML">Abbrechen</a></p>
         </div>
     </form>
@@ -130,7 +145,7 @@
         <div class="cell">{{ form.gueltig_bis }}</div>
         <div class="cell">
             <button type="submit">Speichern</button>
-            <p><a hx-get="{% url 'gemeinde_edit' gemeinde.id %}"
+            <p><a hx-get="{% url 'gemeinde_cancel' gemeinde.id %}"
                hx-target="#gdetablerow-{{ gemeinde.id }}"
                hx-swap="outerHTML">Abbrechen</a></p>
         </div>
@@ -139,9 +154,10 @@
  
 {% endpartialdef %}
 
-
+<div id="gdetable">
+    
 <h1>Gemeinden</h1>
-
+<div id="delete-confirmation"></div>
 <a  hx-get="{% url 'gemeinde_add' %}"
     hx-target="#newgemeindeform"
     hx-swap="outerHTML"
@@ -156,6 +172,7 @@
         <div class="row">
             <div class="cell">Gemeindenummer</div>
             <div class="cell">Name</div>
+            <div class="cell">Körperschaftstyp</div>
             <div class="cell">Arbeitgebernummer PPA</div>
             <div class="cell">Arbeitgebernummer ZVK</div>
             <div class="cell">Arbeitgebernummer RV</div>
@@ -180,14 +197,15 @@
                 <p><a hx-get="{% url 'gemeinde_edit' gemeinde.id %}"
                    hx-target="#gdetablerow-{{ gemeinde.id }}"
                    hx-swap="outerHTML">Bearbeiten</a></p>
-                <a hx-get="{% url 'gemeinde_delete' gemeinde.id %}"
-                   hx-target="#gdetablerow-{{ gemeinde.id }}"
-                   hx-swap="outerHTML">Löschen</a></p>
+                <p><a hx-get="{% url 'gemeinde_delete' gemeinde.id %}"
+                   hx-target="#delete-confirmation"
+                   hx-swap="outerHTML"               
+                   >Löschen</a></p>
             </div>
         </div>
         {% endfor %}
     </div>
     <div id="newgemeindeform"></div>
 </div>
-
+</div>
 {% endblock %}

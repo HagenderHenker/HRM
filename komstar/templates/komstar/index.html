@@ -6,7 +6,29 @@
 
 <p>Hier können Sie die Organisationsstruktur Ihrer Gemeinde verwalten.</p>
 <p>Wählen Sie eine der folgenden Optionen:</p>
+
+
+
+
+
+
 <h2>Einrichtungsoptionen</h2>
+<p></p>
+<h3>Personal</h3>
+
+
+
+<h3>Stellenplan</h3>
+
+<ul>
+    <li><a href="{% url 'stellenuebersicht' %}">Stellen verwalten</a></li>
+    <li><a href="{% url 'stellenartenuebersicht' %}">Stellenarten verwalten</a></li>
+    <li><a href="{% url 'stellenkategorienuebersicht' %}">Stellenkategorien verwalten</a></li>
+    <li><a href="{% url 'stellenstatusuebersicht' %}">Stellenstatus verwalten</a></li>
+    <li><a href="{% url 'stellenbesetzungsstatusuebersicht' %}">Stellenbesetzungsstatus verwalten</a></li>
+
+
+<h3>Orga</h3>
 <ul>
     <li><a href="{% url 'koerperschaftstypenuebersicht' %}">Körperschaftstypen verwalten</a></li>
     <li><a href="{% url 'gemeindenuebersicht' %}">Gemeinden verwalten</a></li>

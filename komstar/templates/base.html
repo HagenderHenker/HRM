@@ -15,7 +15,7 @@
         <title>KomStar</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
     </head>
     <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
         <!--[if lt IE 7]>
@@ -23,10 +23,14 @@
         <![endif]-->
         
        <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"></script>
-        <h1>KomStar</h1>
+        <div id="container">
+       <div id="header">
+       <h1 hx-get="{% url 'index' %}" hx-target="#container" hx-swap="outerHTML">KomStar</h1>
+
+         </div>
         {% block content %}
         {% endblock %}
-
+         </div>
 
     </body>
 </html>

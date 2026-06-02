@@ -78,6 +78,13 @@
     hx-target="#newkoerperschaftstypform"
     hx-swap="outerHTML"
     ><b>Neuen Körperschaftstyp hinzufügen</b></a></p>
+
+{% if delete_message %}
+    <div class="alert alert-success">
+        {{ delete_message }}
+    </div>
+{% endif %}
+
 <p></p>
 <div class="table">
     <div class="thead">

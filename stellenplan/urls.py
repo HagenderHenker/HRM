@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from . views import stellenarten_uebersicht, stellenarten_add, stellenarten_edit, stellenarten_delete
+from . views import HHJGDE_uebersicht, HHJGDE_add, HHJGDE_edit, HHJGDE_delete
 from . views import haushalte_uebersicht, haushalte_add, haushalte_edit, haushalte_delete
 from . views import teilhaushalte_uebersicht, teilhaushalte_add, teilhaushalte_edit, teilhaushalte_delete
 from . views import produkte_uebersicht, produkte_add, produkte_edit, produkte_delete
@@ -32,6 +33,12 @@ urlpatterns = [
     path('stellenarten/add/', stellenarten_add, name='stellenarten_add'),
     path('stellenarten/edit/<int:id>/', stellenarten_edit, name='stellenarten_edit'),
     path('stellenarten/delete/<int:id>/', stellenarten_delete, name='stellenarten_delete'),
+
+    # CRUD HHJGDE
+    path('hhjgde/', HHJGDE_uebersicht, name='hhjgde_uebersicht'),
+    path('hhjgde/add/', HHJGDE_add, name='hhjgde_add'),
+    path('hhjgde/edit/<int:id>/', HHJGDE_edit, name='hhjgde_edit'),
+    path('hhjgde/delete/<int:id>/', HHJGDE_delete, name='hhjgde_delete'),
 
     # CRUD Haushalte
     path('haushalte/', haushalte_uebersicht, name='haushalte_uebersicht'),

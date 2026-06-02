@@ -1,6 +1,6 @@
 
 from django import forms
-from .models import Stellenarten, Haushalte, Teilhaushalte, Produkte, Kostenstellen
+from .models import HHJGDE, Stellenarten, Haushalte, Teilhaushalte, Produkte, Kostenstellen
 
 
 # Standard-Formulare für die CRUD-Operationen der Modelle in stellenplan/models.py
@@ -8,6 +8,11 @@ from .models import Stellenarten, Haushalte, Teilhaushalte, Produkte, Kostenstel
 class StellenartenForm(forms.ModelForm):
     class Meta:
         model = Stellenarten
+        fields = '__all__'
+
+class HHJGDEForm(forms.ModelForm):
+    class Meta:
+        model = HHJGDE
         fields = '__all__'
 
 class HaushalteForm(forms.ModelForm):

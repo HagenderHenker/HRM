@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from . views import koerperschaftstypenuebersicht, koerperschaftstypen_add, koerperschaftstypen_edit, koerperschaftstypen_delete
-from . views import gemeindenuebersicht, gemeinde_add, gemeinde_edit, gemeinde_delete
+from . views import gemeindenuebersicht, gemeinde_add, gemeinde_edit, gemeinde_delete, gemeinde_cancel
 from . views import orggliederungstiefe_uebersicht, orggliederungstiefe_add, orggliederungstiefe_edit, orggliederungstiefe_delete
 from . views import organisationseinheiten_uebersicht, organisationseinheiten_add, organisationseinheiten_edit, organisationseinheiten_delete
 from . views import aufgaben_uebersicht, aufgaben_add, aufgaben_edit, aufgaben_delete
@@ -36,6 +36,7 @@ urlpatterns = [
     path('gemeinden/add/', gemeinde_add, name='gemeinde_add'),
     path('gemeinden/edit/<int:id>/', gemeinde_edit, name='gemeinde_edit'),
     path('gemeinden/delete/<int:id>/', gemeinde_delete, name='gemeinde_delete'),
+    path('gemeinden/cancel/<int:id>/', gemeinde_cancel, name='gemeinde_cancel'),
     
     # CRUD OrgGliederungstiefe
     path('orggliederungstiefe/', orggliederungstiefe_uebersicht, name='orggliederungstiefe_uebersicht'),

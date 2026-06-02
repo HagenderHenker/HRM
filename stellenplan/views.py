@@ -1,22 +1,69 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from .models import Stellenarten, HHJGDE, Haushalte, Teilhaushalte, Produkte, Kostenstellen, Stellenplan, KostenstellenaufteilungStellen, StellenplanSoll, Stellenbesetzung
+from .forms import StellenartenForm, HHJGDEForm, HaushalteForm, TeilhaushalteForm, ProdukteForm, KostenstellenForm
 
 # Create your views here.
 
 #CRUD Stellenarten model = Stellenarten
 
 def stellenarten_uebersicht(request):
-    return HttpResponse("Stellenartenübersicht")
+    
+    stellenarten = Stellenarten.objects.all().order_by('stellenart')
+
+    return render(request, 'stellenplan/stellenarten/stellenarten_uebersicht.html', {'stellenarten': stellenarten})
+    
+
+
+
 
 def stellenarten_add(request):
-    return HttpResponse("Stellenart hinzufügen")
+
+    if request.method == 'GET':
+        form = StellenartenForm()
+        return render(request, 'stellenplan/stellenarten/stellenarten_uebersicht.html#stellenarten_add_form', {'form': form})
+    
+    if request.method == 'POST':
+        form = StellenartenForm(request.POST)
+
+        if form.is_valid():
+            print("form is valid")
+            stellenart = form.save()
+            if request.headers.get('HX-Request'):
+                return render(request, 'stellenplan/stellenarten/stellenarten_uebersicht.html#stellenartentablerow', {'stellenart': stellenart})
+            return redirect('stellenartenuebersicht')
+        else:
+            print("form is not valid")
+            return HttpResponse('alles doof gelaufen')
+
+    return render(request, 'stellenplan/stellenarten/stellenarten_uebersicht.html#stellenarten_add_form')
+
 
 def stellenarten_edit(request, id):
     return HttpResponse(f"Stellenart mit ID {id} bearbeiten")
 
+
+
 def stellenarten_delete(request, id):
     return HttpResponse(f"Stellenart mit ID {id} löschen")
+
+# CRUD HHJGDE
+
+def HHJGDE_uebersicht(request):
+    return HttpResponse("HHJGDE Übersicht")
+
+def HHJGDE_add(request):
+    return HttpResponse("HHJGDE hinzufügen")
+
+def HHJGDE_edit(request, id):
+    return HttpResponse(f"HHJGDE mit ID {id} bearbeiten")
+
+def HHJGDE_delete(request, id):
+    return HttpResponse(f"HHJGDE mit ID {id} löschen")
+
+
+
 
 # CRUD Haushalte
 

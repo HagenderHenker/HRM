@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
-from .models import Gemeinden, OrgGliederungstiefe, Organisationseinheiten, Aufgaben, Geschaeftsverteilung, TaetigkeitenORG
+from .models import Gemeinden, OrgGliederungstiefe, Organisationseinheiten, Aufgaben, Geschaeftsverteilung, TaetigkeitenORG, Koerperschaftstypen
 from .forms import GemeindenForm, KoerperschaftstypenForm
 
 
@@ -9,7 +9,9 @@ from .forms import GemeindenForm, KoerperschaftstypenForm
 # CRUD Koerperschaftstypen
 
 def koerperschaftstypenuebersicht(request):
-    return render(request, 'orga/koerperschaftstypen/koerperschaftstypen_uebersicht.html')
+    koerperschaftstypen = Koerperschaftstypen.objects.all().order_by('typ')
+
+    return render(request, 'orga/koerperschaftstypen/koerperschaftstypen_uebersicht.html', {'koerperschaftstypen': koerperschaftstypen})
 
 def koerperschaftstypen_add(request):
 
@@ -19,13 +21,14 @@ def koerperschaftstypen_add(request):
         return render(request, 'orga/koerperschaftstypen/koerperschaftstypen_uebersicht.html#koerperschaftstypen_add_form', {'form': form})
     
     if request.method == 'POST':
+        print(request.POST)
         form = KoerperschaftstypenForm(request.POST)
 
         if form.is_valid():
             print("form is valid")
             ktyp = form.save()
             if request.headers.get('HX-Request'):
-                return render(request, 'orga/koerperschaftstypen/koerperschaftstypen_uebersicht.html#koerperschaftstypen_row', {'ktyp': ktyp})
+                return render(request, 'orga/koerperschaftstypen/koerperschaftstypen_uebersicht.html#koerperschaftstypen_row', {'körperschaftstyp': ktyp})
             return redirect('koerperschaftstypenuebersicht')
         else:
             print("form is not valid")
@@ -34,11 +37,37 @@ def koerperschaftstypen_add(request):
     return render(request, 'orga/koerperschaftstypen/koerperschaftstypen_uebersicht.html')
 
 def koerperschaftstypen_edit(request, id):
+
+    ktyp = get_object_or_404(Koerperschaftstypen, id=id)
+    if request.method == 'POST':
+        print("post request received")
+        form = KoerperschaftstypenForm(request.POST, instance=ktyp)
+
+        if form.is_valid():
+            print("form is valid")
+            ktyp = form.save()
+            if request.headers.get('HX-Request'):
+                return render(request, 'orga/koerperschaftstypen/koerperschaftstypen_uebersicht.html#koerperschaftstypen_row', {'körperschaftstyp': ktyp})
+            return redirect('koerperschaftstypenuebersicht')
+        else:
+           
+            return HttpResponse()
+
+    else:
+        form = KoerperschaftstypenForm(instance=ktyp)
+
+
+
     return render(request, 'orga/koerperschaftstypen/koerperschaftstypen_uebersicht.html#koerperschaftstypen_edit_form', {'id': id})
 
 def koerperschaftstypen_delete(request, id):
-    return render(request, 'orga/koerperschaftstypen/koerperschaftstypen_uebersicht.html#koerperschaftstypen_delete_form', {'id': id})
+    
+    to_delete = get_object_or_404(Koerperschaftstypen, id=id) 
+    to_delete.delete()
+    delete_message = f"Körperschaftstyp '{to_delete.typ}' wurde gelöscht."
+    koerperschaftstypen = Koerperschaftstypen.objects.all().order_by('typ')
 
+    return render(request, 'orga/koerperschaftstypen/koerperschaftstypen_uebersicht.html', {'koerperschaftstypen': koerperschaftstypen, 'delete_message': delete_message})
 
 
 # CRUD GEMEINDEN
@@ -92,8 +121,23 @@ def gemeinde_edit(request, id):
     return render(request, 'orga/gemeinde/gemeindeuebersicht.html#gdetable_edit', {'gemeinde': gde, 'form': form})
 
 def gemeinde_delete(request, id):
-    return render(request, 'orga/gemeinde/gemeinde_delete.html', {'id': id})
+    print(f"Delete request received for Gemeinde with id: {id}")
+    if request.method == 'GET':
+        gde = get_object_or_404(Gemeinden, id=id)
+        return render(request, 'orga/gemeinde/gemeindeuebersicht.html#delete_confirmation', {'gemeinde': gde})
 
+    if request.method == 'POST':
+
+        to_delete = get_object_or_404(Gemeinden, id=id)
+        to_delete.delete()
+        delete_message = f"Gemeinde '{to_delete.gemeinde}' wurde gelöscht."
+        gemeinden = Gemeinden.objects.all().order_by('gemeindenummer')
+        return render(request, 'orga/gemeinde/gemeindeuebersicht.html', {'gemeinden': gemeinden, 'delete_message': delete_message})
+    
+def gemeinde_cancel(request, id):
+    print(f"Cancel request received for Gemeinde with id: {id}")
+    gde = get_object_or_404(Gemeinden, id=id)
+    return render(request, 'orga/gemeinde/gemeindeuebersicht.html#gdetablerow', {'gemeinde': gde})
 
 
 # CRUD OrgGliederungstiefe

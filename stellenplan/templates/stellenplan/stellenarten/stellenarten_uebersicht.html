@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!--________________ -->
+<!--  Partials -->
+<!--________________ -->
+
+
+<!--  ADD-Partial -->
+<!--Teil der CRUD Funktionen. Verknüpft mit stellenarten_add funktion in views.py via url: stellenarten/add/ name=stellenarten_add -->
+{% partialdef stellenarten_add_form %}
+
+<div class="row" id="stellenarten_add_form">
+
+    <form hx-post="{% url 'stellenarten_add' %}"
+          hx-target="#stellenarten_add_form"
+          hx-swap="outerHTML"
+          style="display:contents">
+
+        {% csrf_token %}
+
+        <div class="cell">{{ form.stellenart }}</div>
+        <div class="cell">{{ form.stellenart_bez }}</div>
+        <div class="cell"><button type="submit">Hinzufügen</button></div>
+    </form>
+</div>
+
+{% endpartialdef %}
+
+
+<!--  Tablerow-Partial -->
+<!--Teil der CRUD Funktionen. Im Rahmen der HTMX Anpassung wird dieses HTML als Ergebnis der Operation entweder beim Update an die Stelle des Alten Datensatzes 
+oder ans Ende der Tabelle geschrieben. Als Ergebnis in den Operationen Add, Edit aufgerufen -->
+
+{% partialdef stellenartentablerow %}
+
+        <div class="row" id="stellenartentablerow-{{ stellenart.id }}">
+            <div class="cell">{{ stellenart.stellenart }}</div>
+            <div class="cell">{{ stellenart.stellenart_bez }}</div>
+            <div class="cell">
+                <p><a hx-get="{% url 'stellenarten_edit' stellenart.id %}"
+                   hx-target="#stellenartentablerow-{{ stellenart.id }}"
+                   hx-swap="outerHTML">Bearbeiten</a></p>
+                <p><a href="{% url 'stellenarten_delete' stellenart.id %}">Löschen</a></p>
+            </div>
+        </div>
+
+{% endpartialdef %}
+
+<!--  Edit-Partial -->
+<!--Teil der CRUD Funktionen. Verknüpft mit: path('stellenarten/edit/<int:id>/', stellenarten_edit, name='stellenarten_edit'), -->
+
+{% partialdef stellenarten_edit_form %}
+
+
+
+{% endpartialdef %}
+
+
+
+
+
+<!--  Delete-Message-Partial -->
+<!--Teil der CRUD Funktionen. Verknüpft mit stellenarten_add funktion in views.py via url: stellenarten/delete/ name=stellenarten_delete -->
+
+<!--________________ -->
+<!-- MAIN CONTENT -->
+<!--________________ -->
+
+<h1>Stellenarten</h1>
+
+<p><a  hx-get="{% url 'stellenarten_add' %}"
+    hx-target="#newstellenartform"
+    hx-swap="outerHTML"
+    ><b>Neue Stellenart hinzufügen</b></a></p>
+<p></p>
+<div class="table">
+    <div class="thead">
+        <div class="row">
+            <div class="cell">Stellenart</div>
+            <div class="cell">Bezeichnnung</div>
+            <div class="cell">Aktionen</div>
+            
+        </div>
+    </div>
+
+    <div class="tbody">
+        {% for stellenart in stellenarten %}
+        <div class="row" id="stelltablerow-{{ stellenart.id }}">
+
+            <div class="cell">{{ stellenart.stellenart }}</div>
+            <div class="cell">{{ stellenart.stellenart_bez }}</div>
+
+            <div class="cell">
+                <p><a hx-get="{% url 'stellenarten_edit' stellenart.id %}"
+                   hx-target="#stelltablerow-{{ stellenart.id }}"
+                   hx-swap="outerHTML">Bearbeiten</a></p>
+
+                <p><a href="{% url 'stellenarten_delete' stellenart.id %}">Löschen</a></p>
+            </div>
+        </div>
+        {% endfor %} 
+        </div>
+        <div id="newstellenartform"></div>       
+    </div>
+   
+
+{% endblock %}
