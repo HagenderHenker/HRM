@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'personalstamm',
     'stellenplan',
     'orga',
+    'core',
     
 ]
 

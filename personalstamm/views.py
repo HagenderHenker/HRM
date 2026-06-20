@@ -1,9 +1,40 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from komstar.crud import BaseCRUDView, HtmxCrudMixin, ListView, CreateView, UpdateView, DeleteView, CancelView
 from . models import Personalstamm, VergGrp, StundenVZAE, Tabellenentgelt, Beurteilungstypen, PersFortschritt, Kinder, AusWeiterbildung, Beurteilungen, Pruefungen, TaetigkeitenPersonal, PersSonst 
+from .forms import VergGrpForm, StundenVZAEForm, TabellenentgeltForm, BeurteilungstypenForm, PersFortschrittForm, KinderForm, AusWeiterbildungForm, BeurteilungenForm, PruefungenForm, TaetigkeitenPersonalForm, PersSonstForm
 # Create your views here.
 
 # CRUD vergütungsgruppen model = VergGrp
+
+class VergGrpConfig:
+    model = VergGrp
+    form_class = VergGrpForm
+    context_object_name = 'vergrp'
+    list_url_name = 'vergrp_ueb'
+    template_name = 'verguetungsgruppen/verguetungsgruppen.html'
+    partial_row = 'tablerow'
+    partial_add = 'table_add'
+    partial_edit = 'table_edit'
+    partial_delete = 'delete_confirmation'
+    title = 'Vergütungsgruppen'
+    titlesingular = ' Vergütungsgruppe'
+    list_url_name = 'verggrp_ueb'
+
+class VergGrpListView(VergGrpConfig, ListView):
+    pass   
+
+class VergGrpCreateView(VergGrpConfig, CreateView):
+    pass
+
+class VergGrpUpdateView(VergGrpConfig, UpdateView):
+    pass
+
+class VergGrpDeleteView(VergGrpConfig, DeleteView):
+    pass
+
+class VergGrpCancelView(VergGrpConfig, CancelView):
+    pass
 
 def vergrp_ueb(request):
     return HttpResponse("Vergütungsgruppenübersicht")

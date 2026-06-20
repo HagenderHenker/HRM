@@ -17,7 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from . views import personaluebersicht, personaladd, personaledit, personaldelete
-from . views import vergrp_ueb, vergrp_add, vergrp_edit, vergrp_delete
+from . views import VergGrpListView, VergGrpCreateView, VergGrpUpdateView, VergGrpDeleteView, VergGrpCancelView
+#from . views import vergrp_ueb, vergrp_add, vergrp_edit, vergrp_delete
 from . views import StundenVZAE_ueb, StundenVZAE_add, StundenVZAE_edit, StundenVZAE_delete
 from . views import Tabellenentgelt_ueb, Tabellenentgelt_add, Tabellenentgelt_edit, Tabellenentgelt_delete
 from . views import Beurteilungstypen_ueb, Beurteilungstypen_add, Beurteilungstypen_edit, Beurteilungstypen_delete
@@ -36,11 +37,25 @@ urlpatterns = [
     path('pers/add/', personaladd, name='personaladd'),
     path('pers/edit/<int:id>/', personaledit, name='personaledit'),
     path('pers/delete/<int:id>/', personaldelete, name='personaldelete'),
+    
+
     # CRUD Vergütungsgruppen model = VerGrp
-    path('vergrp/', vergrp_ueb, name='vergrp_ueb'),
-    path('vergrp/add/', vergrp_add, name='vergrp_add'),
-    path('vergrp/edit/<int:id>/', vergrp_edit, name='vergrp_edit'),
-    path('vergrp/delete/<int:id>/', vergrp_delete, name='vergrp_delete'),
+#    path('vergrp/', vergrp_ueb, name='vergrp_ueb'),
+#    path('vergrp/add/', vergrp_add, name='vergrp_add'),
+#    path('vergrp/edit/<int:id>/', vergrp_edit, name='vergrp_edit'),
+#    path('vergrp/delete/<int:id>/', vergrp_delete, name='vergrp_delete'),
+    
+    path('verggrp/', VergGrpListView.as_view(), name='verggrp_ueb'),
+    path('verggrp/add/', VergGrpCreateView.as_view(), name='verggrp_add'),
+    path('verggrp/edit/<int:id>/', VergGrpUpdateView.as_view(), name='verggrp_edit'),
+    path('verggrp/delete/<int:id>/', VergGrpDeleteView.as_view(), name='verggrp_delete'),
+    path('verggrp/cancel/<int:id>/', VergGrpCancelView.as_view(), name='verggrp_cancel'),
+    
+
+
+
+
+
 
     # CRUD Arbeitszeitstandardmodelle model = StundenVZAE
     path('stundenvzae/', StundenVZAE_ueb, name='stundenvzae_ueb'),

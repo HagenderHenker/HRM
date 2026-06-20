@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from .models import Stellenarten, HHJGDE, Haushalte, Teilhaushalte, Produkte, Kostenstellen, Stellenplan, KostenstellenaufteilungStellen, StellenplanSoll, Stellenbesetzung
 from .forms import StellenartenForm, HHJGDEForm, HaushalteForm, TeilhaushalteForm, ProdukteForm, KostenstellenForm
@@ -79,19 +79,80 @@ def haushalte_edit(request, id):
 def haushalte_delete(request, id):
     return HttpResponse(f"Haushalt mit ID {id} löschen")
 
+
 # CRUD Teilhaushalte model = Teilhaushalte
 
 def teilhaushalte_uebersicht(request):
-    return HttpResponse("Teilhaushaltsübersicht")
+
+    teilhaushalte = Teilhaushalte.objects.all().order_by( 'haushaltsjahr','gemeinde', 'th')
+    
+    return render(request, 'stellenplan/teilhaushalte/teilhaushalte_uebersicht.html', {'teilhaushalte': teilhaushalte})
 
 def teilhaushalte_add(request):
+
+    if request.method == 'GET':
+        form = TeilhaushalteForm()
+        return render(request, 'stellenplan/teilhaushalte/teilhaushalte_uebersicht.html#th_add_form', {'form': form})
+
+    if request.method == 'POST':
+        form = TeilhaushalteForm(request.POST)
+
+        if form.is_valid():
+            print("form is valid")
+            teilhaushalt = form.save()
+            if request.headers.get('HX-Request'):
+                return render(request, 'stellenplan/teilhaushalte/teilhaushalte_uebersicht.html#thtablerow', {'th': teilhaushalt})
+            return redirect('teilhaushalteuebersicht')
+        else:
+            print("form is not valid")
+            return HttpResponse('alles doof gelaufen')
+
     return HttpResponse("Teilhaushalt hinzufügen")
 
 def teilhaushalte_edit(request, id):
-    return HttpResponse(f"Teilhaushalt mit ID {id} bearbeiten")
+    th = get_object_or_404(Teilhaushalte, id=id)
+    
+    if request.method == 'POST':
+        print("post request received")
+        form = TeilhaushalteForm(request.POST, instance=th)
+
+        if form.is_valid():
+            print("form is valid")
+            th = form.save()
+            if request.headers.get('HX-Request'):
+                return render(request, 'stellenplan/teilhaushalte/teilhaushalte_uebersicht.html#thtablerow', {'th': th})
+            return redirect('teilhaushalteuebersicht')
+        else:
+           
+            return HttpResponse('alles doof gelaufen')
+    else:
+        form = TeilhaushalteForm(instance=th)
+    
+    return render(request, 'stellenplan/teilhaushalte/teilhaushalte_uebersicht.html#thtable_edit', {'th': th, 'form': form})
+
 
 def teilhaushalte_delete(request, id):
-    return HttpResponse(f"Teilhaushalt mit ID {id} löschen")
+    print(f"Delete request received for TH with id: {id}")
+
+    if request.method == 'GET':
+        th = get_object_or_404(Teilhaushalte, id=id)
+        return render(request, 'stellenplan/teilhaushalte/teilhaushalte_uebersicht.html#delete_confirmation', {'th': th})
+
+    if request.method == 'POST':
+
+        to_delete = get_object_or_404(Teilhaushalte, id=id)
+        to_delete.delete()
+        delete_message = f"Teilhaushalt '{to_delete.th}' wurde gelöscht."
+        teilhaushalte = Teilhaushalte.objects.all().order_by('haushaltsjahr', 'gemeinde', 'th')
+        return render(request, 'stellenplan/teilhaushalte/teilhaushalte_uebersicht.html', {'teilhaushalte': teilhaushalte, 'delete_message': delete_message})
+
+def teilhaushalte_cancel(request, id):
+    print(f"Cancel request received for Teilhaushalt with id: {id}")
+    th = get_object_or_404(Teilhaushalte, id=id)
+    return render(request, 'stellenplan/teilhaushalte/teilhaushalte_uebersicht.html#thtablerow', {'th': th})
+
+
+
 
 # CRUD Produkte model = Produkte
 

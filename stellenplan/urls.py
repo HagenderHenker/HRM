@@ -19,7 +19,7 @@ from django.urls import path, include
 from . views import stellenarten_uebersicht, stellenarten_add, stellenarten_edit, stellenarten_delete
 from . views import HHJGDE_uebersicht, HHJGDE_add, HHJGDE_edit, HHJGDE_delete
 from . views import haushalte_uebersicht, haushalte_add, haushalte_edit, haushalte_delete
-from . views import teilhaushalte_uebersicht, teilhaushalte_add, teilhaushalte_edit, teilhaushalte_delete
+from . views import teilhaushalte_uebersicht, teilhaushalte_add, teilhaushalte_edit, teilhaushalte_delete, teilhaushalte_cancel
 from . views import produkte_uebersicht, produkte_add, produkte_edit, produkte_delete
 from . views import kostenstellen_uebersicht, kostenstellen_add, kostenstellen_edit, kostenstellen_delete
 from . views import stellenuebersicht, stellen_add, stellen_edit, stellen_delete
@@ -51,6 +51,7 @@ urlpatterns = [
     path('teilhaushalte/add/', teilhaushalte_add, name='teilhaushalte_add'),
     path('teilhaushalte/edit/<int:id>/', teilhaushalte_edit, name='teilhaushalte_edit'),
     path('teilhaushalte/delete/<int:id>/', teilhaushalte_delete, name='teilhaushalte_delete'),
+    path('teilhaushalte/cancel/<int:id>/', teilhaushalte_cancel, name='teilhaushalte_cancel'),
     
     # CRUD Produkte model = Produkte
     path('produkte/', produkte_uebersicht, name='produkte_uebersicht'),

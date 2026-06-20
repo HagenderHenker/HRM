@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+{% partialdef reorderbutton %}
+<!-- Partial for reorder button -->
+<button hx-post="{% url 'teilhaushalte_uebersicht' %}"
+        hx-target="#table"
+        hx-swap="outerHTML">
+    Reihenfolge anzeigen
+</button>
+{% endpartialdef %}
+
+{% partialdef delete_confirmation %}
+<!-- Partial for delete-confirmation -->
+
+<div class="delete-confirmation" id="tablerow-{{ row.id }}">
+<h3>Sind Sie sicher, dass diese{{ titlesingular }} gelöscht werden soll? </h3>    
+<p>Der Löschvorgang kann nicht rückgängig gemacht werden und wirkt sich möglicherweise auf bestehende Datensätze aus.</p>
+    <button hx-post="{% url 'verggrp_delete' row.id %}"
+            hx-target="#tablerow-{{ row.id }}"
+            hx-swap="outerHTML">
+        Ja
+    </button>
+    <a href="#" onclick="return confirm('Are you sure?')">Nein</a>
+</div>
+{% endpartialdef %}
+
+{% partialdef tablerow %}
+<!-- Partial zum austausch einzelner Zeilen -->
+        <div class="row" id="tablerow-{{ row.id }}">
+            <div class="cell">{{ row.verg_grp }}</div>
+            <div class="cell">{{ row.bezeichnung }}</div>
+            <div class="cell">{{ row.beamter }}</div>
+            <div class="cell">{{ row.bo_an }}</div>
+            
+            <div class="cell">
+                    <p><a hx-get="{% url 'verggrp_edit' row.id %}"
+                    hx-target="#tablerow-{{ row.id }}"
+                    hx-swap="outerHTML">Bearbeiten</a></p>
+                    <p><a hx-get="{% url 'verggrp_delete' row.id %}"
+                    hx-target="#delete-confirmation-{{ th.id }}"
+                    hx-swap="outerHTML"
+                    
+                    > Löschen</a></p>
+                </div>
+        </div>
+
+{% endpartialdef %}
+
+{% partialdef table_add %}
+<!-- Partial für den Create Prozess -->
+<div class="row" id="add_row">    
+
+    <form hx-post="{% url 'verggrp_add' %}"
+          hx-target="#add_row"
+          hx-swap="outerHTML"
+          style="display:contents">
+        {% csrf_token %}
+
+        <div class="cell">{{ form.verg_grp }}</div>
+        <div class="cell">{{ form.bezeichnung }}</div>
+        <div class="cell">{{ form.beamter }}</div>
+        <div class="cell">{{ form.bo_an }}</div>
+        
+        <div class="cell">
+            <button type="submit">Speichern</button>
+            <p><a hx-get="{% url 'verggrp_ueb' %}"
+               hx-target="#table"
+               hx-swap="outerHTML">Abbrechen</a></p>
+        </div>
+    </form>
+</div>
+
+{% endpartialdef %}
+
+
+{% partialdef table_edit %}
+
+<div class="row" id="tablerow-{{ row.id }}">    
+    <form hx-post="{% url 'verggrp_edit' row.id %}"
+          hx-target="#tablerow-{{ row.id }}"
+          hx-swap="outerHTML"
+          style="display:contents">
+        {% csrf_token %}
+        <div class="cell">{{ form.verg_grp }}</div>
+        <div class="cell">{{ form.bezeichnung }}</div>
+        <div class="cell">{{ form.beamter }}</div>
+        <div class="cell">{{ form.bo_an }}</div>
+        
+        <div class="cell">
+            <button type="submit">Speichern</button>
+            <p><a hx-get="{% url 'verggrp_cancel' row.id %}"
+               hx-target="#tablerow-{{ row.id }}"
+               hx-swap="outerHTML">Abbrechen</a></p>
+        </div>
+    </form>
+</div>
+ 
+{% endpartialdef %}
+
+<div id="table">
+    
+<h1>{{ title }}</h1>
+<div id="delete-confirmation"></div>
+<a  hx-get="{% url 'verggrp_add' %}"
+    hx-target="#newform"
+    hx-swap="outerHTML"
+    >Neuen {{ title }} hinzufügen</a>
+
+
+<div class="table">
+    <div class="thead">
+        <div class="row">
+            <div class="cell">Vergütungsgruppe</div>
+            <div class="cell">Bezeichnung</div>
+            <div class="cell">Beamtenbesoldung</div>
+            <div class="cell">Besoldungsordnung/Anlage</div>
+        
+            <div class="cell">Aktionen</div>
+        </div>
+    </div>
+    <div id="newform"></div>
+    <div class="tbody">
+        {% for row in values %}
+
+        <div class="row" id="tablerow-{{ row.id }}">
+            <div class="cell">{{ row.verg_grp }}</div>
+            <div class="cell">{{ row.bezeichnung }}</div>
+            <div class="cell">{{ row.beamter }}</div>
+            <div class="cell">{{ row.bo_an }}</div>
+            <div class="cell">
+                <p><a hx-get="{% url 'verggrp_edit' row.id %}"
+                   hx-target="#tablerow-{{ row.id }}"
+                   hx-swap="outerHTML">Bearbeiten</a></p>
+                <p><a hx-get="{% url 'verggrp_delete' row.id %}"
+                   hx-target="#delete-confirmation-{{ row.id }}"
+                   hx-swap="outerHTML"               
+                   >Löschen</a></p>
+            </div>
+           
+        </div>
+        <div id="delete-confirmation-{{ row.id }}"></div>
+
+        {% endfor %}
+    </div>
+    <div id="newform"></div>
+</div>
+</div>
+{% endblock %}
