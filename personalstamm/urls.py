@@ -19,7 +19,8 @@ from django.urls import path, include
 from . views import personaluebersicht, personaladd, personaledit, personaldelete
 from . views import VergGrpListView, VergGrpCreateView, VergGrpUpdateView, VergGrpDeleteView, VergGrpCancelView
 #from . views import vergrp_ueb, vergrp_add, vergrp_edit, vergrp_delete
-from . views import StundenVZAE_ueb, StundenVZAE_add, StundenVZAE_edit, StundenVZAE_delete
+from . views import StundenVZAEListView, StundenVZAECreateView, StundenVZAEUpdateView, StundenVZAEDeleteView, StundenVZAECancelView
+#from . views import StundenVZAE_ueb, StundenVZAE_add, StundenVZAE_edit, StundenVZAE_delete
 from . views import Tabellenentgelt_ueb, Tabellenentgelt_add, Tabellenentgelt_edit, Tabellenentgelt_delete
 from . views import Beurteilungstypen_ueb, Beurteilungstypen_add, Beurteilungstypen_edit, Beurteilungstypen_delete
 from . views import persfortschritt_ueb, persfortschritt_add, persfortschritt_edit, persfortschritt_delete
@@ -58,10 +59,17 @@ urlpatterns = [
 
 
     # CRUD Arbeitszeitstandardmodelle model = StundenVZAE
-    path('stundenvzae/', StundenVZAE_ueb, name='stundenvzae_ueb'),
-    path('stundenvzae/add/', StundenVZAE_add, name='stundenvzae_add'),
-    path('stundenvzae/edit/<int:id>/', StundenVZAE_edit, name='stundenvzae_edit'),
-    path('stundenvzae/delete/<int:id>/', StundenVZAE_delete, name='stundenvzae_delete'),
+    #path('stundenvzae/', StundenVZAE_ueb, name='stundenvzae_ueb'),
+    #path('stundenvzae/add/', StundenVZAE_add, name='stundenvzae_add'),
+    #path('stundenvzae/edit/<int:id>/', StundenVZAE_edit, name='stundenvzae_edit'),
+    #path('stundenvzae/delete/<int:id>/', StundenVZAE_delete, name='stundenvzae_delete'),
+
+    path('stundenvzae/', StundenVZAEListView.as_view(), name='stundenvzae_ueb'),
+    path('stundenvzae/add/', StundenVZAECreateView.as_view(), name='stundenvzae_add'),  
+    path('stundenvzae/edit/<int:id>/', StundenVZAEUpdateView.as_view(), name='stundenvzae_edit'),
+    path('stundenvzae/delete/<int:id>/', StundenVZAEDeleteView.as_view(), name='stundenvzae_delete'),
+    path('stundenvzae/cancel/<int:id>/', StundenVZAECancelView.as_view(), name='stundenvzae_cancel'),
+
 
     # CRUD Tabellenentgelt  model = Tabellenentgelt
     path('tabellenentgelt/', Tabellenentgelt_ueb, name='tabellenentgelt_ueb'),

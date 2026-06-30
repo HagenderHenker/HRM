@@ -72,7 +72,18 @@ class HtmxCrudMixin:
 class ListView(HtmxCrudMixin, View):    
     def get(self, request):
 
-        context = { 'values': self.get_queryset()}
+        if self.order_by:
+            print("Ordering queryset by:", self.order_by)  # Debug-Ausgabe der Sortierung
+            try:
+                context = {'values': self.get_queryset(request).order_by(self.order_by)}
+                print("Context with ordering:", context)  # Debug-Ausgabe des Kontextes mit Sortierung
+            except:
+                context = {'values': self.get_queryset(request)}
+                print("Error in ordering. Context without ordering:", context)  # Debug-Ausgabe bei Fehler in Sortierung
+        else:
+            context = { 'values': self.get_queryset(request)}
+
+
         if self.title:
             context['title'] = self.title
 
@@ -93,27 +104,30 @@ class CreateView(HtmxCrudMixin, View):
             obj = form.save()
             print("Object created:", obj)  # Debug-Ausgabe des erstellten Objekts
             if self._is_htmx(request):
-                print("HTMX request detected. Returning partial.")  # Debug-Ausgabe für HTMX-Erkennung
-                print(self.partial_row)
-                print({self.context_object_name: obj})
-                print(self._partial(request, self.partial_row,
-                                     {'row': obj}))
-                #return self._partial(request, self.partial_row,
-                #                     {self.context_object_name: obj})
+                #print("HTMX request detected. Returning partial.")  # Debug-Ausgabe für HTMX-Erkennung
+                #print(self.partial_row)
+                #print({self.context_object_name: obj})
+                #print(self._partial(request, self.partial_row,
+                #                     {'row': obj}))
+                return self._partial(request, self.partial_row,
+                                     {'row': obj})
             return redirect(self.list_url_name)
         # Formular mit Fehlern zurückgeben
         return self._partial(request, self.partial_add, {'form': form})
 
 
 class UpdateView(HtmxCrudMixin, View):
-    def get(self, request, pk):
-        obj = get_object_or_404(self.model, pk=pk)
+    def get(self, request, id):
+        print("GET request for UpdateView with id:", id)  # Debug-Ausgabe der ID
+        obj = get_object_or_404(self.model, pk=id)
+        print("Object to edit:", obj)  # Debug-Ausgabe des zu bearbeitenden Objekts
         form = self.form_class(instance=obj)
+        print("Form for editing:", form)  # Debug-Ausgabe des Formulars
         return self._partial(request, self.partial_edit,
                              {self.context_object_name: obj, 'form': form})
 
-    def post(self, request, pk):
-        obj = get_object_or_404(self.model, pk=pk)
+    def post(self, request, id):
+        obj = get_object_or_404(self.model, pk=id)
         form = self.form_class(request.POST, instance=obj)
         if form.is_valid():
             obj = form.save()

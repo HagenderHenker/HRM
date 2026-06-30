@@ -30,11 +30,11 @@
 <!-- Partial zum austausch einzelner Zeilen -->
         <div id="newform"></div>
         <div class="row" id="tablerow-{{ row.id }}">
-            <div class="cell">{{ row.verg_grp }}</div>
-            <div class="cell">{{ row.bezeichnung }}</div>
             <div class="cell">{{ row.beamter }}</div>
-            <div class="cell">{{ row.bo_an }}</div>
-            <div class="cell">{{ row.reihenfolge }}</div>
+            <div class="cell">{{ row.art }}</div>
+            <div class="cell">{{ row.urlaubstage }}</div>
+            <div class="cell">{{ row.stunden }}</div>
+            <div class="cell">{{ row.bis }}</div>
             <div class="cell">
                     <p><a hx-get="{% url 'verggrp_edit' row.id %}"
                     hx-target="#tablerow-{{ row.id }}"
@@ -59,11 +59,11 @@
           style="display:contents">
         {% csrf_token %}
 
-        <div class="cell">{{ form.verg_grp }}</div>
-        <div class="cell">{{ form.bezeichnung }}</div>
         <div class="cell">{{ form.beamter }}</div>
-        <div class="cell">{{ form.bo_an }}</div>
-        <div class="cell">{{ form.reihenfolge }}</div>
+        <div class="cell">{{ form.art }}</div>
+        <div class="cell">{{ form.urlaubstage }}</div>
+        <div class="cell">{{ form.stunden }}</div>
+        <div class="cell">{{ form.bis }}</div>
         
         <div class="cell">
             <button type="submit">Speichern</button>
@@ -85,11 +85,11 @@
           hx-swap="outerHTML"
           style="display:contents">
         {% csrf_token %}
-        <div class="cell">{{ form.verg_grp }}</div>
-        <div class="cell">{{ form.bezeichnung }}</div>
         <div class="cell">{{ form.beamter }}</div>
-        <div class="cell">{{ form.bo_an }}</div>
-        <div class="cell">{{ form.reihenfolge }}</div>
+        <div class="cell">{{ form.art }}</div>
+        <div class="cell">{{ form.urlaubstage }}</div>
+        <div class="cell">{{ form.stunden }}</div>
+        <div class="cell">{{ form.bis }}</div>
         
         <div class="cell">
             <button type="submit">Speichern</button>
@@ -115,11 +115,11 @@
 <div class="table">
     <div class="thead">
         <div class="row">
-            <div class="cell">Vergütungsgruppe</div>
-            <div class="cell">Bezeichnung</div>
-            <div class="cell">Beamtenbesoldung</div>
-            <div class="cell">Besoldungsordnung/Anlage</div>
-            <div class="cell">Reihenfolge</div>
+            <div class="cell">Beamter</div>
+            <div class="cell">Art</div>
+            <div class="cell">Urlaubstage</div>
+            <div class="cell">Stunden</div>
+            <div class="cell">Bis</div>
         
             <div class="cell">Aktionen</div>
         </div>
@@ -129,11 +129,11 @@
         {% for row in values %}
 
         <div class="row" id="tablerow-{{ row.id }}">
-            <div class="cell">{{ row.verg_grp }}</div>
-            <div class="cell">{{ row.bezeichnung }}</div>
             <div class="cell">{{ row.beamter }}</div>
-            <div class="cell">{{ row.bo_an }}</div>
-            <div class="cell">{{ row.reihenfolge }}</div>
+            <div class="cell">{{ row.art }}</div>
+            <div class="cell">{{ row.urlaubstage }}</div>
+            <div class="cell">{{ row.stunden }}</div>
+            <div class="cell">{{ row.bis }}</div>
             <div class="cell">
                 <p><a hx-get="{% url 'verggrp_edit' row.id %}"
                    hx-target="#tablerow-{{ row.id }}"

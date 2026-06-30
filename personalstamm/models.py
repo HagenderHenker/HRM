@@ -4,11 +4,12 @@ from orga.models import Gemeinden
 # Referenz- und Lookup-Tabellen
 class VergGrp(models.Model):
     """Vergütungsgruppen / Besoldungsgruppen (TVöD / BeamtVG)."""
-    verg_grp = models.CharField(max_length=50, verbose_name="Vergütungsgruppe")
+    verg_grp = models.CharField(max_length=50, verbose_name="Vergütungsgruppe", unique=True)
     bezeichnung = models.CharField(max_length=255, null=True, blank=True)
     beamter = models.BooleanField(default=False, verbose_name="Beamtenstelle")
     bo_an = models.CharField(max_length=50, null=True, blank=True,
                              verbose_name="Besoldungsordnung/Anlage")
+    reihenfolge = models.IntegerField(null=True, blank=True, verbose_name="Reihenfolge")
 
     class Meta:
         db_table = 'VergGrp'

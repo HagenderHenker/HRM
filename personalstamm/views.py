@@ -20,7 +20,8 @@ class VergGrpConfig:
     title = 'Vergütungsgruppen'
     titlesingular = ' Vergütungsgruppe'
     list_url_name = 'verggrp_ueb'
-
+    order_by = 'reihenfolge'
+    
 class VergGrpListView(VergGrpConfig, ListView):
     pass   
 
@@ -50,17 +51,48 @@ def vergrp_delete(request, id):
 
 # CRUD Arbeitszeitstandardmodelle model = StundenVZAE
 
-def StundenVZAE_ueb(request):
-    return HttpResponse("Arbeitszeitstandardmodelle Übersicht")
+class StundenVZAEConfig:
+    model = StundenVZAE
+    form_class = StundenVZAEForm
+    context_object_name = 'stundenvzae'
+    list_url_name = 'stundenvzae_ueb'
+    template_name = 'arbeitszeitstandardmodelle/arbeitszeitstandardmodelle.html'
+    partial_row = 'tablerow'
+    partial_add = 'table_add'
+    partial_edit = 'table_edit'
+    partial_delete = 'delete_confirmation'
+    title = 'Arbeitszeitstandardmodelle'
+    titlesingular = 'Arbeitszeitstandardmodell'
+    list_url_name = 'stundenvzae_ueb'
+    order_by = 'reihenfolge'
+    
+class StundenVZAEListView(StundenVZAEConfig, ListView):
+    pass   
 
-def StundenVZAE_add(request):
-    return HttpResponse("Arbeitszeitstandardmodell hinzufügen")
+class StundenVZAECreateView(StundenVZAEConfig, CreateView):
+    pass
 
-def StundenVZAE_edit(request, id):
-    return HttpResponse(f"Arbeitszeitstandardmodell mit ID {id} bearbeiten")
+class StundenVZAEUpdateView(StundenVZAEConfig, UpdateView):
+    pass
 
-def StundenVZAE_delete(request, id):
-    return HttpResponse(f"Arbeitszeitstandardmodell mit ID {id} löschen")
+class StundenVZAEDeleteView(StundenVZAEConfig, DeleteView):
+    pass
+
+class StundenVZAECancelView(StundenVZAEConfig, CancelView):
+    pass
+
+
+#def StundenVZAE_ueb(request):
+#    return HttpResponse("Arbeitszeitstandardmodelle Übersicht")
+
+#def StundenVZAE_add(request):
+#    return HttpResponse("Arbeitszeitstandardmodell hinzufügen")
+
+#def StundenVZAE_edit(request, id):
+#    return HttpResponse(f"Arbeitszeitstandardmodell mit ID {id} bearbeiten")
+
+#def StundenVZAE_delete(request, id):
+#    return HttpResponse(f"Arbeitszeitstandardmodell mit ID {id} löschen")
 
 # CRUD Tabellenentgelt  model = Tabellenentgelt
 
