@@ -130,6 +130,8 @@ def gemeinde_delete(request, id):
 
         to_delete = get_object_or_404(Gemeinden, id=id)
         to_delete.delete()
+        if request.headers.get('HX-Request'):
+            return HttpResponse('')
         delete_message = f"Gemeinde '{to_delete.gemeinde}' wurde gelöscht."
         gemeinden = Gemeinden.objects.all().order_by('gemeindenummer')
         return render(request, 'orga/gemeinde/gemeindeuebersicht.html', {'gemeinden': gemeinden, 'delete_message': delete_message})

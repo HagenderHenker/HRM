@@ -12,18 +12,34 @@
 {% endpartialdef %}
 
 {% partialdef delete_confirmation %}
-<!-- Partial for delete-confirmation -->
+<!-- Partial for delete-confirmation
 
-<div class="delete-confirmation" id="tablerow-{{ row.id }}">
-<h3>Sind Sie sicher, dass diese{{ titlesingular }} gelöscht werden soll? </h3>    
-<p>Der Löschvorgang kann nicht rückgängig gemacht werden und wirkt sich möglicherweise auf bestehende Datensätze aus.</p>
-    <button hx-post="{% url 'verggrp_delete' row.id %}"
-            hx-target="#tablerow-{{ row.id }}"
-            hx-swap="outerHTML">
-        Ja
-    </button>
-    <a href="#" onclick="return confirm('Are you sure?')">Nein</a>
+
+ -->
+<div class="row" id="tablerow-{{ row.id }}">
+    <div class="cell">{{ row.verg_grp }}</div>
+    <div class="cell">{{ row.bezeichnung }}</div>
+    <div class="cell">{{ row.beamter }}</div>
+    <div class="cell">{{ row.bo_an }}</div>
+    <div class="cell">{{ row.reihenfolge }}</div>
+    <div class="cell">
+        <h3 style="color: red;">Sind Sie sicher, dass diese{{ titlesingular }} gelöscht werden soll? </h3>    
+        <p>Der Löschvorgang kann nicht rückgängig gemacht werden und wirkt sich möglicherweise auf bestehende Datensätze aus.</p>
+        <button type="button"
+                hx-post="{% url 'verggrp_delete' row.id %}"
+                hx-target="#tablerow-{{ row.id }}"
+                hx-swap="outerHTML">
+            Ja
+        </button>
+        <button type="button"
+                hx-get="{% url 'verggrp_cancel' row.id %}"
+                hx-target="#tablerow-{{ row.id }}"
+                hx-swap="outerHTML">
+            Nein
+        </button>
+    </div>
 </div>
+
 {% endpartialdef %}
 
 {% partialdef tablerow %}
@@ -40,10 +56,9 @@
                     hx-target="#tablerow-{{ row.id }}"
                     hx-swap="outerHTML">Bearbeiten</a></p>
                     <p><a hx-get="{% url 'verggrp_delete' row.id %}"
-                    hx-target="#delete-confirmation-{{ th.id }}"
-                    hx-swap="outerHTML"
-                    
-                    > Löschen</a></p>
+                   hx-target="#tablerow-{{ row.id }}"
+                   hx-swap="outerHTML"               
+                   >Löschen</a></p>
                 </div>
         </div>
 
@@ -139,13 +154,13 @@
                    hx-target="#tablerow-{{ row.id }}"
                    hx-swap="outerHTML">Bearbeiten</a></p>
                 <p><a hx-get="{% url 'verggrp_delete' row.id %}"
-                   hx-target="#delete-confirmation-{{ row.id }}"
+                   hx-target="#tablerow-{{ row.id }}"
                    hx-swap="outerHTML"               
                    >Löschen</a></p>
             </div>
            
         </div>
-        <div id="delete-confirmation-{{ row.id }}"></div>
+
 
         {% endfor %}
     </div>

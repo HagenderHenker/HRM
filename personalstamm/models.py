@@ -26,10 +26,9 @@ class StundenVZAE(models.Model):
     urlaubstage = models.IntegerField(null=True, blank=True, verbose_name="Urlaubstage/Jahr")
     stunden = models.CharField(max_length=50, null=True, blank=True,
                                verbose_name="Wochenstunden")
-    bis = models.CharField(max_length=50, null=True, blank=True,
-                           verbose_name="Gültig bis")
-    
-    
+    ab = models.DateField(verbose_name="Gültig ab", null=True, blank=True)
+    bis = models.DateField(verbose_name="Gültig bis", null=True, blank=True)
+
     class Meta:
         db_table = 'StundenVZAE'
         verbose_name = 'Stunden/VZAE'
@@ -40,11 +39,11 @@ class StundenVZAE(models.Model):
 
 class Tabellenentgelt(models.Model):
     """TVöD-Entgelttabelle mit Zeitreihe (gültig ab/bis)."""
-    gilt_ab = models.DateTimeField(verbose_name="Gültig ab")
-    gilt_bis = models.DateTimeField(null=True, blank=True, verbose_name="Gültig bis")
-    verg_grp = models.CharField(max_length=50, verbose_name="Vergütungsgruppe")
+    gilt_ab = models.DateField(verbose_name="Gültig ab")
+    gilt_bis = models.DateField(null=True, blank=True, verbose_name="Gültig bis")
+    verg_grp = models.ForeignKey(VergGrp, on_delete=models.PROTECT, verbose_name="Vergütungsgruppe")
     stufe = models.IntegerField(null=True, blank=True, verbose_name="Stufe")
-    tabellenentgelt = models.IntegerField(null=True, blank=True,
+    tabellenentgelt = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True,
                                           verbose_name="Tabellenentgelt (ct)")
 
     class Meta:

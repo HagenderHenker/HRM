@@ -54,7 +54,7 @@ def vergrp_delete(request, id):
 class StundenVZAEConfig:
     model = StundenVZAE
     form_class = StundenVZAEForm
-    context_object_name = 'stundenvzae'
+    context_object_name = 'StundenVZAE'
     list_url_name = 'stundenvzae_ueb'
     template_name = 'arbeitszeitstandardmodelle/arbeitszeitstandardmodelle.html'
     partial_row = 'tablerow'
@@ -64,7 +64,7 @@ class StundenVZAEConfig:
     title = 'Arbeitszeitstandardmodelle'
     titlesingular = 'Arbeitszeitstandardmodell'
     list_url_name = 'stundenvzae_ueb'
-    order_by = 'reihenfolge'
+    order_by = 'art'
     
 class StundenVZAEListView(StundenVZAEConfig, ListView):
     pass   
@@ -96,19 +96,79 @@ class StundenVZAECancelView(StundenVZAEConfig, CancelView):
 
 # CRUD Tabellenentgelt  model = Tabellenentgelt
 
-def Tabellenentgelt_ueb(request):
-    return HttpResponse("Tabellenentgelt Übersicht")
+class TabellenentgeltConfig:
+    model = Tabellenentgelt
+    form_class = TabellenentgeltForm
+    context_object_name = 'Tabellenentgelt'
+    list_url_name = 'tabellenentgelt_ueb'
+    template_name = 'tabellenentgelt/tabellenentgelt.html'
+    partial_row = 'tablerow'
+    partial_add = 'table_add'
+    partial_edit = 'table_edit'
+    partial_delete = 'delete_confirmation'
+    title = 'Tabellenentgelt'
+    titlesingular = 'Tabellenentgelt'
+   
+    order_by = 'verg_grp'
 
-def Tabellenentgelt_add(request):
-    return HttpResponse("Tabellenentgelt hinzufügen")
+class TabellenentgeltListView(TabellenentgeltConfig, ListView):
+    pass
 
-def Tabellenentgelt_edit(request, id):
-    return HttpResponse(f"Tabellenentgelt mit ID {id} bearbeiten")
+class TabellenentgeltCreateView(TabellenentgeltConfig, CreateView):
+    pass
 
-def Tabellenentgelt_delete(request, id):
-    return HttpResponse(f"Tabellenentgelt mit ID {id} löschen")
+class TabellenentgeltUpdateView(TabellenentgeltConfig, UpdateView):
+    pass
+
+class TabellenentgeltDeleteView(TabellenentgeltConfig, DeleteView):
+    pass
+
+class TabellenentgeltCancelView(TabellenentgeltConfig, CancelView):
+    pass
+
+#def Tabellenentgelt_ueb(request):
+#    return HttpResponse("Tabellenentgelt Übersicht")
+
+#def Tabellenentgelt_add(request):
+#    return HttpResponse("Tabellenentgelt hinzufügen")
+
+#def Tabellenentgelt_edit(request, id):
+#    return HttpResponse(f"Tabellenentgelt mit ID {id} bearbeiten")
+
+#def Tabellenentgelt_delete(request, id):
+#    return HttpResponse(f"Tabellenentgelt mit ID {id} löschen")
 
 # CRUD Beurteilungstypen model = Beurteilungstypen
+
+class BeurteilungstypenConfig:
+    model = Beurteilungstypen
+    form_class = BeurteilungstypenForm
+    context_object_name = 'Beurteilungstypen'
+    list_url_name = 'beurteilungstypen_ueb'
+    template_name = 'beurteilungstypen/beurteilungstypen.html'
+    partial_row = 'tablerow'
+    partial_add = 'table_add'
+    partial_edit = 'table_edit'
+    partial_delete = 'delete_confirmation'
+    title = 'Beurteilungstypen'
+    titlesingular = 'Beurteilungstyp'
+   
+    order_by = 'verg_grp'
+
+class BeurteilungstypenListView(BeurteilungstypenConfig, ListView):
+    pass
+
+class BeurteilungstypenCreateView(BeurteilungstypenConfig, CreateView):
+    pass
+
+class BeurteilungstypenUpdateView(BeurteilungstypenConfig, UpdateView):
+    pass
+
+class BeurteilungstypenDeleteView(BeurteilungstypenConfig, DeleteView):
+    pass
+
+class BeurteilungstypenCancelView(BeurteilungstypenConfig, CancelView):
+    pass
 
 def Beurteilungstypen_ueb(request):
     return HttpResponse("Beurteilungstypen Übersicht")
@@ -121,6 +181,18 @@ def Beurteilungstypen_edit(request, id):
 
 def Beurteilungstypen_delete(request, id):
     return HttpResponse(f"Beurteilungstyp mit ID {id} löschen")
+
+
+
+
+
+
+
+#-----------------------------------------------
+# Personalstammdaten 
+#-----------------------------------------------
+
+
 
 
 # CRUD Personalstamm model = Personalstamm

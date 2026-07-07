@@ -21,7 +21,8 @@ from . views import VergGrpListView, VergGrpCreateView, VergGrpUpdateView, VergG
 #from . views import vergrp_ueb, vergrp_add, vergrp_edit, vergrp_delete
 from . views import StundenVZAEListView, StundenVZAECreateView, StundenVZAEUpdateView, StundenVZAEDeleteView, StundenVZAECancelView
 #from . views import StundenVZAE_ueb, StundenVZAE_add, StundenVZAE_edit, StundenVZAE_delete
-from . views import Tabellenentgelt_ueb, Tabellenentgelt_add, Tabellenentgelt_edit, Tabellenentgelt_delete
+from . views import TabellenentgeltListView, TabellenentgeltCreateView, TabellenentgeltUpdateView, TabellenentgeltDeleteView, TabellenentgeltCancelView
+#from . views import Tabellenentgelt_ueb, Tabellenentgelt_add, Tabellenentgelt_edit, Tabellenentgelt_delete
 from . views import Beurteilungstypen_ueb, Beurteilungstypen_add, Beurteilungstypen_edit, Beurteilungstypen_delete
 from . views import persfortschritt_ueb, persfortschritt_add, persfortschritt_edit, persfortschritt_delete
 from . views import kinder_ueb, kinder_add, kinder_edit, kinder_delete
@@ -72,10 +73,19 @@ urlpatterns = [
 
 
     # CRUD Tabellenentgelt  model = Tabellenentgelt
-    path('tabellenentgelt/', Tabellenentgelt_ueb, name='tabellenentgelt_ueb'),
-    path('tabellenentgelt/add/', Tabellenentgelt_add, name='tabellenentgelt_add'),
-    path('tabellenentgelt/edit/<int:id>/', Tabellenentgelt_edit, name='tabellenentgelt_edit'),
-    path('tabellenentgelt/delete/<int:id>/', Tabellenentgelt_delete, name='tabellenentgelt_delete'),
+    
+    path('tabellenentgelt/', TabellenentgeltListView.as_view(), name='tabellenentgelt_ueb'),
+    path('tabellenentgelt/add/', TabellenentgeltCreateView.as_view(), name='tabellenentgelt_add'),
+    path('tabellenentgelt/edit/<int:id>/', TabellenentgeltUpdateView.as_view(), name='tabellenentgelt_edit'),
+    path('tabellenentgelt/delete/<int:id>/', TabellenentgeltDeleteView.as_view(), name='tabellenentgelt_delete'),
+    path('tabellenentgelt/cancel/<int:id>/', TabellenentgeltCancelView.as_view(), name='tabellenentgelt_cancel'),
+       
+    
+    
+    #path('tabellenentgelt/', Tabellenentgelt_ueb, name='tabellenentgelt_ueb'),
+    #path('tabellenentgelt/add/', Tabellenentgelt_add, name='tabellenentgelt_add'),
+    #path('tabellenentgelt/edit/<int:id>/', Tabellenentgelt_edit, name='tabellenentgelt_edit'),
+    #path('tabellenentgelt/delete/<int:id>/', Tabellenentgelt_delete, name='tabellenentgelt_delete'),
 
     # CRUD Beurteilungstypen model = Beurteilungstypen
     path('beurteilungstypen/', Beurteilungstypen_ueb, name='beurteilungstypen_ueb'),

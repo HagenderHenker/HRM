@@ -71,7 +71,7 @@ class HtmxCrudMixin:
 
 class ListView(HtmxCrudMixin, View):    
     def get(self, request):
-
+        print("ListView GET request received")  # Debug-Ausgabe für GET-Anfrage
         if self.order_by:
             print("Ordering queryset by:", self.order_by)  # Debug-Ausgabe der Sortierung
             try:
@@ -104,25 +104,23 @@ class CreateView(HtmxCrudMixin, View):
             obj = form.save()
             print("Object created:", obj)  # Debug-Ausgabe des erstellten Objekts
             if self._is_htmx(request):
-                #print("HTMX request detected. Returning partial.")  # Debug-Ausgabe für HTMX-Erkennung
-                #print(self.partial_row)
-                #print({self.context_object_name: obj})
-                #print(self._partial(request, self.partial_row,
-                #                     {'row': obj}))
+                
                 return self._partial(request, self.partial_row,
                                      {'row': obj})
             return redirect(self.list_url_name)
+        else:
+            print("Form is invalid. Errors:", form.errors)  # Debug-Ausgabe der Formfehler
         # Formular mit Fehlern zurückgeben
         return self._partial(request, self.partial_add, {'form': form})
 
 
 class UpdateView(HtmxCrudMixin, View):
     def get(self, request, id):
-        print("GET request for UpdateView with id:", id)  # Debug-Ausgabe der ID
+        #print("GET request for UpdateView with id:", id)  # Debug-Ausgabe der ID
         obj = get_object_or_404(self.model, pk=id)
-        print("Object to edit:", obj)  # Debug-Ausgabe des zu bearbeitenden Objekts
+        #print("Object to edit:", obj)  # Debug-Ausgabe des zu bearbeitenden Objekts
         form = self.form_class(instance=obj)
-        print("Form for editing:", form)  # Debug-Ausgabe des Formulars
+        #print("Form for editing:", form)  # Debug-Ausgabe des Formulars
         return self._partial(request, self.partial_edit,
                              {self.context_object_name: obj, 'form': form})
 
@@ -155,10 +153,10 @@ class DeleteView(HtmxCrudMixin, View):
 
 
 class CancelView(HtmxCrudMixin, View):
-    def get(self, request, pk):
-        obj = get_object_or_404(self.model, pk=pk)
+    def get(self, request, id):
+        obj = get_object_or_404(self.model, pk=id)
         return self._partial(request, self.partial_row,
-                             {self.context_object_name: obj})
+                             {'row': obj})
 
 
 
