@@ -6,3 +6,9 @@
 .cell  { display: table-cell; padding: 8px; border: 1px solid #ccc; }
 .alert { padding: 10px; margin-bottom: 15px; border: 1px solid transparent; border-radius: 4px; }
 .alert-success { color: #08220e; background-color: #a0f0b3; border-color: #c3e6cb; }
+
+.pers-accordion { display: contents; }
+.pers-accordion > summary { display: contents; cursor: pointer; list-style: none; }
+.pers-accordion > summary::-webkit-details-marker { display: none; }
+.pers-row__chevron { transition: transform 0.15s ease; }
+.pers-accordion[open] .pers-row__chevron { transform: rotate(180deg); }

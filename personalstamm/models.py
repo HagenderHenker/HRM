@@ -1,3 +1,5 @@
+from tabnanny import verbose
+
 from django.db import models
 from orga.models import Gemeinden
 
@@ -70,30 +72,11 @@ class Beurteilungstypen(models.Model):
 
 
 # Personal Modelle
-"""
-class Personalstamm(models.Model):
-    """
+
 #    Enthält die Stammdaten der Mitarbeiter.
 #    dazu gehören persönliche Informationen, Adressdaten, Eintritts- und Austrittsdaten sowie die Personalnummer.
+#    Bei der Handhabung von Personalstammdaten ist es wichtig, die Datenschutzbestimmungen zu beachten und sicherzustellen, dass nur autorisierte Personen Zugriff auf diese sensiblen Informationen haben.
 
-"""
-    personalnummer = models.CharField(max_length=20, unique=True)
-    vorname = models.CharField(max_length=50)
-    nachname = models.CharField(max_length=50)
-    strasse = models.CharField(max_length=100)
-    hausnummer = models.CharField(max_length=10)
-    plz = models.CharField(max_length=10)
-    ort = models.CharField(max_length=100)
-    geburtsdatum = models.DateField()
-    eintrittsdatum = models.DateField()
-    austrittsdatum = models.DateField(null=True, blank=True)
-    austrittsgrund = models.CharField(max_length=255, null=True, blank=True)
-    
-    
-
-    def __str__(self):
-        return f"{self.vorname} {self.nachname} ({self.personalnummer})"
-"""
 class Personalstamm(models.Model):
     """
     Stammdaten aller Mitarbeiter.
@@ -109,6 +92,8 @@ class Personalstamm(models.Model):
     e_mail = models.EmailField(null=True, blank=True, verbose_name="E-Mail")
     gemeinde = models.ForeignKey(Gemeinden, on_delete=models.PROTECT, verbose_name="Gemeinde")
     einsatzort = models.CharField(max_length=255, null=True, blank=True, verbose_name="Einsatzort")
+    geburtsdatum = models.DateTimeField(null=True, blank=True, verbose_name="Geburtsdatum")
+    geburtsort = models.CharField(max_length=255, null=True, blank=True, verbose_name="Geburtsort")
 
     # Familienstand (Zeitverlauf)
     verheiratet_seit = models.DateTimeField(null=True, blank=True, verbose_name="Verheiratet seit")
@@ -146,7 +131,7 @@ class Personalstamm(models.Model):
     def __str__(self):
         return f"{self.pers_nr} – {self.nachname}, {self.vorname}"
 
-class PersFortschritt(models.Model):
+class PersFort0
     """
     Vergütungsentwicklung im Zeitablauf (Stufenaufstiege TVöD / Beförderungen).
     """
@@ -156,17 +141,29 @@ class PersFortschritt(models.Model):
     )
     ab_datum = models.DateTimeField(verbose_name="Gültig ab")
     bis_datum = models.DateTimeField(null=True, blank=True, verbose_name="Gültig bis")
-    verguetung = models.CharField(max_length=50, null=True, blank=True,
-                                   verbose_name="Vergütungsgruppe")
+    eingruppierung = models.ForeignKey(Tabellenentgelt, on_delete=models.PROTECT, verbose_name="Vergütung")
     stufe = models.IntegerField(null=True, blank=True, verbose_name="Stufe")
-
+    entgelt = models.DecimalField(max_digits=10, decimal_places=2, default=0, null=True, blank=True,)
+    kinderzuschlag = models.DecimalField(max_digits=10, decimal_places=2, default=0, null=True, blank=True, verbose_name="Kinderzuschlag")
+    sonstige_zulagen = models.DecimalField(max_digits=10, decimal_places=2, default=0,null=True, blank=True, verbose_name="Sonstige Zulagen")
+    vwl_ag = models.DecimalField(max_digits=10, decimal_places=2, null=True, default=0, blank=True, verbose_name="VWL Arbeitgeberanteil")  
+    gesamt_brutto = models.DecimalField(max_digits=10, decimal_places=2, null=True, default=0, blank=True, verbose_name="Gesamtbrutto")
+    entgeltumwandlung = models.DecimalField(max_digits=10, decimal_places=2, default=0, null=True, blank=True, verbose_name="Entgeltumwandlung")
+    entgeltumwandlung_text = models.CharField(max_length=255, null=True, blank=True, verbose_name="Entgeltumwandlung (Text)")
+    ag_sv = models.DecimalField(max_digits=10, decimal_places=2, null=True, default=0, blank=True, verbose_name="AG Sozialversicherung")
+    ag_zvk = models.DecimalField(max_digits=10, decimal_places=2, null=True, default=0, blank=True, verbose_name="AG Zusatzversorgung")
+    ag_sonstiges = models.DecimalField(max_digits=10, decimal_places=2, null=True, default=0, blank=True, verbose_name="AG Sonstiges")
+    ag_sonstiges_text = models.CharField(max_length=255, null=True, blank=True, verbose_name="AG Sonstiges (Text)")
+    bemerkungen = models.CharField(max_length=500, null=True, blank=True, verbose_name="Bemerkungen")
+    
+    
     class Meta:
         db_table = 'PersFortschritt'
         verbose_name = 'Vergütungsfortschritt'
         verbose_name_plural = 'Vergütungsfortschritt'
 
     def __str__(self):
-        return f"{self.pers_nr} – {self.verguetung} Stufe {self.stufe} ab {self.ab_datum}"
+        return f"{self.pers_nr} – {self.eingruppierung} Stufe {self.stufe} ab {self.ab_datum}"
 
 class Kinder(models.Model):
     """Kinder des Mitarbeiters (relevant für Kindergeld, Familienstand)."""

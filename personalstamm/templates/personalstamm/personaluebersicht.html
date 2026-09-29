@@ -1,0 +1,768 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- =========================================================
+   PARTIAL: search_tbody
+   Wird bei jedem Suchvorgang komplett ausgetauscht (Ziel: #personal-tbody)
+   ========================================================= -->
+{% partialdef search_tbody %}
+<div class="tbody" id="personal-tbody">
+    {% for p in personal_list %}
+        {% partial tablerow %}
+    {% empty %}
+        <div class="row"><div class="cell" style="grid-column: 1 / -1;">Keine Treffer.</div></div>
+    {% endfor %}
+</div>
+{% endpartialdef %}
+
+
+<!-- =========================================================
+   PARTIAL: tablerow
+   Eine Mitarbeiterzeile als natives <details>-Akkordeon.
+   display:contents (siehe styles.css) erhält die .table/.row/.cell-Struktur.
+   Der Detailbereich wird erst beim ersten Öffnen per HTMX nachgeladen
+   (toggle[target.open] once = Lazy-Load).
+   ========================================================= -->
+{% partialdef tablerow %}
+<details class="pers-accordion" id="pers-{{ p.pers_nr }}" name="pers-accordion"
+          hx-get="{% url 'personal_row_detail' p.pers_nr %}"
+          hx-trigger="toggle[target.open] once"
+          hx-target="find .pers-detail-content"
+          hx-swap="innerHTML">
+    <summary>
+        <div class="row">
+            <div class="cell">{{ p.pers_nr }}</div>
+            <div class="cell">{{ p.nachname }}</div>
+            <div class="cell">{{ p.vorname }}</div>
+            <div class="cell">{{ p.geburtsdatum }}</div>
+            <div class="cell">{{ p.gemeinde }}</div>
+            <div class="cell">{{ p.einsatzort }}</div>
+            <div class="cell"><i class="pers-row__chevron">&#9662;</i></div>
+        </div>
+    </summary>
+    <div class="row pers-row--detail">
+        <div class="cell" style="grid-column: 1 / -1;">
+            <div class="pers-detail-content">Lade Details&hellip;</div>
+        </div>
+    </div>
+</details>
+{% endpartialdef %}
+
+
+<!-- =========================================================
+   PARTIAL: row_detail
+   Inhalt des aufgeklappten Bereichs: vollständige Stammdaten
+   + alle sieben Detailtabellen. Wird NUR als Antwort auf den
+   Lazy-Load-Request gerendert (nie Teil der initialen Seite).
+   ========================================================= -->
+{% partialdef row_detail %}
+<div class="stammdaten-full">
+    <h3>{{ p.nachname }}, {{ p.vorname }} (Nr. {{ p.pers_nr }})</h3>
+    <div class="stammdaten-grid">
+        <div><strong>Straße/Hausnummer:</strong> {{ p.strasse|default:"–" }}</div>
+        <div><strong>Ort:</strong> {{ p.ort|default:"–" }}</div>
+        <div><strong>Telefon:</strong> {{ p.telefon|default:"–" }}</div>
+        <div><strong>Mobil:</strong> {{ p.mobil|default:"–" }}</div>
+        <div><strong>E-Mail:</strong> {{ p.e_mail|default:"–" }}</div>
+        <div><strong>Gemeinde:</strong> {{ p.gemeinde }}</div>
+        <div><strong>Einsatzort:</strong> {{ p.einsatzort|default:"–" }}</div>
+        <div><strong>Eintritt:</strong> {{ p.eintritt|date:"d.m.Y"|default:"–" }}</div>
+        <div><strong>Austritt:</strong> {{ p.austritt|date:"d.m.Y"|default:"–" }}</div>
+        <div><strong>Beamter:</strong> {{ p.beamter|yesno:"Ja,Nein" }}</div>
+        <div><strong>GdB:</strong> {{ p.gdb|default:"–" }}</div>
+    </div>
+</div>
+
+<!-- == Kinder == -->
+<div class="table detail-table">
+    <h4>Kinder</h4>
+    <div class="thead">
+        <div class="row">
+            <div class="cell">Name des Kindes</div>
+            <div class="cell">Geburtsdatum</div>
+            <div class="cell">Status</div>
+            <div class="cell">Aktionen</div>
+        </div>
+    </div>
+    <div id="kinder-newform-{{ p.pers_nr }}"></div>
+    <div class="tbody" id="kinder-tbody-{{ p.pers_nr }}">
+        {% for row in kinder %}
+            {% partial kinder_tablerow %}
+        {% endfor %}
+    </div>
+    <a hx-get="{% url 'kinder_add' p.pers_nr %}"
+       hx-target="#kinder-newform-{{ p.pers_nr }}"
+       hx-swap="outerHTML">Kind hinzufügen</a>
+</div>
+
+<!-- === Vergütungsfortschritt === -->
+<div class="table detail-table">
+    <h4>Vergütungsfortschritt</h4>
+    <div class="thead">
+        <div class="row">
+            <div class="cell">Gültig ab</div>
+            <div class="cell">Gültig bis</div>
+            <div class="cell">Vergütungsgruppe</div>
+            <div class="cell">Stufe</div>
+            <div class="cell">Aktionen</div>
+        </div>
+    </div>
+    <div id="persfortschritt-newform-{{ p.pers_nr }}"></div>
+    <div class="tbody" id="persfortschritt-tbody-{{ p.pers_nr }}">
+        {% for row in fortschritt %}
+            {% partial persfortschritt_tablerow %}
+        {% endfor %}
+    </div>
+    <a hx-get="{% url 'persfortschritt_add' p.pers_nr %}"
+       hx-target="#persfortschritt-newform-{{ p.pers_nr }}"
+       hx-swap="outerHTML">Eintrag hinzufügen</a>
+</div>
+
+<!-- === Aus-/Weiterbildung === -->
+<div class="table detail-table">
+    <h4>Aus-/Weiterbildung</h4>
+    <div class="thead">
+        <div class="row">
+            <div class="cell">Ausbildungsziel</div>
+            <div class="cell">Ausbildung bei</div>
+            <div class="cell">Von</div>
+            <div class="cell">Bis</div>
+            <div class="cell">Aktionen</div>
+        </div>
+    </div>
+    <div id="ausweiterbildung-newform-{{ p.pers_nr }}"></div>
+    <div class="tbody" id="ausweiterbildung-tbody-{{ p.pers_nr }}">
+        {% for row in ausbildung %}
+            {% partial ausweiterbildung_tablerow %}
+        {% endfor %}
+    </div>
+    <a hx-get="{% url 'ausweiterbildung_add' p.pers_nr %}"
+       hx-target="#ausweiterbildung-newform-{{ p.pers_nr }}"
+       hx-swap="outerHTML">Eintrag hinzufügen</a>
+</div>
+
+<!-- === Beurteilungen === -->
+<div class="table detail-table">
+    <h4>Beurteilungen</h4>
+    <div class="thead">
+        <div class="row">
+            <div class="cell">Datum</div>
+            <div class="cell">Typ</div>
+            <div class="cell">Note</div>
+            <div class="cell">Beurteilender</div>
+            <div class="cell">Aktionen</div>
+        </div>
+    </div>
+    <div id="beurteilungen-newform-{{ p.pers_nr }}"></div>
+    <div class="tbody" id="beurteilungen-tbody-{{ p.pers_nr }}">
+        {% for row in beurteilungen %}
+            {% partial beurteilungen_tablerow %}
+        {% endfor %}
+    </div>
+    <a hx-get="{% url 'beurteilungen_add' p.pers_nr %}"
+       hx-target="#beurteilungen-newform-{{ p.pers_nr }}"
+       hx-swap="outerHTML">Eintrag hinzufügen</a>
+</div>
+
+<!-- === Prüfungen === -->
+<div class="table detail-table">
+    <h4>Prüfungen</h4>
+    <div class="thead">
+        <div class="row">
+            <div class="cell">Bezeichnung</div>
+            <div class="cell">Datum</div>
+            <div class="cell">Ergebnis</div>
+            <div class="cell">Zeugnis</div>
+            <div class="cell">Aktionen</div>
+        </div>
+    </div>
+    <div id="pruefungen-newform-{{ p.pers_nr }}"></div>
+    <div class="tbody" id="pruefungen-tbody-{{ p.pers_nr }}">
+        {% for row in pruefungen %}
+            {% partial pruefungen_tablerow %}
+        {% endfor %}
+    </div>
+    <a hx-get="{% url 'pruefungen_add' p.pers_nr %}"
+       hx-target="#pruefungen-newform-{{ p.pers_nr }}"
+       hx-swap="outerHTML">Eintrag hinzufügen</a>
+</div>
+
+<!-- === Frühere Tätigkeiten === -->
+<div class="table detail-table">
+    <h4>Frühere Tätigkeiten</h4>
+    <div class="thead">
+        <div class="row">
+            <div class="cell">Arbeitgeber</div>
+            <div class="cell">Beginn</div>
+            <div class="cell">Ende</div>
+            <div class="cell">Aufgabengebiet</div>
+            <div class="cell">Aktionen</div>
+        </div>
+    </div>
+    <div id="taetigkeitenpers-newform-{{ p.pers_nr }}"></div>
+    <div class="tbody" id="taetigkeitenpers-tbody-{{ p.pers_nr }}">
+        {% for row in taetigkeiten %}
+            {% partial taetigkeitenpers_tablerow %}
+        {% endfor %}
+    </div>
+    <a hx-get="{% url 'taetigkeitenpers_add' p.pers_nr %}"
+       hx-target="#taetigkeitenpers-newform-{{ p.pers_nr }}"
+       hx-swap="outerHTML">Eintrag hinzufügen</a>
+</div>
+
+<!-- === Sonstiges === -->
+<div class="table detail-table">
+    <h4>Sonstiges</h4>
+    <div class="thead">
+        <div class="row">
+            <div class="cell">Sonstiges</div>
+            <div class="cell">Zeitraum</div>
+            <div class="cell">Aktionen</div>
+        </div>
+    </div>
+    <div id="personalsonst-newform-{{ p.pers_nr }}"></div>
+    <div class="tbody" id="personalsonst-tbody-{{ p.pers_nr }}">
+        {% for row in sonstiges %}
+            {% partial personalsonst_tablerow %}
+        {% endfor %}
+    </div>
+    <a hx-get="{% url 'personalsonst_add' p.pers_nr %}"
+       hx-target="#personalsonst-newform-{{ p.pers_nr }}"
+       hx-swap="outerHTML">Eintrag hinzufügen</a>
+</div>
+{% endpartialdef %}
+
+
+<!-- =========================================================
+   KINDER
+   ========================================================= -->
+{% partialdef kinder_tablerow %}
+<div class="row" id="kind-{{ row.id }}">
+    <div class="cell">{{ row.name_kind }}</div>
+    <div class="cell">{{ row.geburtsdatum|date:"d.m.Y" }}</div>
+    <div class="cell">{{ row.kinderstatus }}</div>
+    <div class="cell">
+        <p><a hx-get="{% url 'kinder_edit' row.id %}" hx-target="#kind-{{ row.id }}" hx-swap="outerHTML">Bearbeiten</a></p>
+        <p><a hx-get="{% url 'kinder_delete' row.id %}" hx-target="#kind-{{ row.id }}" hx-swap="outerHTML">Löschen</a></p>
+    </div>
+</div>
+{% endpartialdef %}
+
+{% partialdef kinder_row_add %}
+<div class="row" id="kinder-newform-{{ pers_nr }}">
+    <form hx-post="{% url 'kinder_add' pers_nr %}" hx-target="#kinder-newform-{{ pers_nr }}" hx-swap="outerHTML" style="display:contents">
+        {% csrf_token %}
+        <div class="cell">{{ form.name_kind }}</div>
+        <div class="cell">{{ form.geburtsdatum }}</div>
+        <div class="cell">{{ form.kinderstatus }}</div>
+        <div class="cell">
+            <button type="submit">Speichern</button>
+            <p><a hx-get="{% url 'personal_row_detail' pers_nr %}" hx-target="find .pers-detail-content" hx-swap="innerHTML">Abbrechen</a></p>
+        </div>
+    </form>
+</div>
+{% endpartialdef %}
+
+{% partialdef kinder_row_edit %}
+<div class="row" id="kind-{{ form.instance.id }}">
+    <form hx-post="{% url 'kinder_edit' form.instance.id %}" hx-target="#kind-{{ form.instance.id }}" hx-swap="outerHTML" style="display:contents">
+        {% csrf_token %}
+        <div class="cell">{{ form.name_kind }}</div>
+        <div class="cell">{{ form.geburtsdatum }}</div>
+        <div class="cell">{{ form.kinderstatus }}</div>
+        <div class="cell">
+            <button type="submit">Speichern</button>
+            <p><a hx-get="{% url 'kinder_cancel' form.instance.id %}" hx-target="#kind-{{ form.instance.id }}" hx-swap="outerHTML">Abbrechen</a></p>
+        </div>
+    </form>
+</div>
+{% endpartialdef %}
+
+{% partialdef kinder_delete_confirm %}
+<div class="row" id="kind-{{ row.id }}">
+    <div class="cell">{{ row.name_kind }}</div>
+    <div class="cell">{{ row.geburtsdatum|date:"d.m.Y" }}</div>
+    <div class="cell">{{ row.kinderstatus }}</div>
+    <div class="cell">
+        <p style="color: red;">Wirklich löschen?</p>
+        <button type="button" hx-post="{% url 'kinder_delete' row.id %}" hx-target="#kind-{{ row.id }}" hx-swap="outerHTML">Ja</button>
+        <button type="button" hx-get="{% url 'kinder_cancel' row.id %}" hx-target="#kind-{{ row.id }}" hx-swap="outerHTML">Nein</button>
+    </div>
+</div>
+{% endpartialdef %}
+
+
+<!-- =========================================================
+   PERSFORTSCHRITT
+   ========================================================= -->
+{% partialdef persfortschritt_tablerow %}
+<div class="row" id="persfortschritt-{{ row.id }}">
+    <div class="cell">{{ row.ab_datum|date:"d.m.Y" }}</div>
+    <div class="cell">{{ row.bis_datum|date:"d.m.Y"|default:"–" }}</div>
+    <div class="cell">{{ row.eingruppierung }}</div>
+    <div class="cell">{{ row.stufe }}</div>
+    <div class="cell">{{ row.entgelt }}</div>
+    <div class="cell">{{ row.kinderzuschlag }}</div>
+    <div class="cell">{{ row.sonstige_zulagen }}</div>
+    <div class="cell">{{ row.vwl_ag }}</div>
+    <div class="cell">{{ row.gesamt_brutto }}</div>
+    <div class="cell">{{ row.entgeltumwandlung }}</div>
+    <div class="cell">{{ row.entgeltumwandlung_text }}</div>
+    <div class="cell">{{ row.ag_sv }}</div>
+    <div class="cell">{{ row.ag_zvk }}</div>
+    <div class="cell">{{ row.ag_sonstiges }}</div>
+    <div class="cell">{{ row.ag_sonstiges_text }}</div>
+    <div class="cell">{{ row.bemerkungen }}</div>
+    
+    <div class="cell">
+        <p><a hx-get="{% url 'persfortschritt_edit' row.id %}" hx-target="#persfortschritt-{{ row.id }}" hx-swap="outerHTML">Bearbeiten</a></p>
+        <p><a hx-get="{% url 'persfortschritt_delete' row.id %}" hx-target="#persfortschritt-{{ row.id }}" hx-swap="outerHTML">Löschen</a></p>
+    </div>
+</div>
+{% endpartialdef %}
+
+{% partialdef persfortschritt_row_add %}
+<div class="row" id="persfortschritt-newform-{{ pers_nr }}">
+    <form hx-post="{% url 'persfortschritt_add' pers_nr %}" hx-target="#persfortschritt-newform-{{ pers_nr }}" hx-swap="outerHTML" style="display:contents">
+        {% csrf_token %}
+        <div class="cell">{{ form.ab_datum }}</div>
+        <div class="cell">{{ form.bis_datum }}</div>
+        <div class="cell">{{ form.verguetung }}</div>
+        <div class="cell">{{ form.stufe }}</div>
+        <div class="cell">
+            <button type="submit">Speichern</button>
+            <p><a hx-get="{% url 'personal_row_detail' pers_nr %}" hx-target="find .pers-detail-content" hx-swap="innerHTML">Abbrechen</a></p>
+        </div>
+    </form>
+</div>
+{% endpartialdef %}
+
+{% partialdef persfortschritt_row_edit %}
+<div class="row" id="persfortschritt-{{ form.instance.id }}">
+    <form hx-post="{% url 'persfortschritt_edit' form.instance.id %}" hx-target="#persfortschritt-{{ form.instance.id }}" hx-swap="outerHTML" style="display:contents">
+        {% csrf_token %}
+        <div class="cell">{{ form.ab_datum }}</div>
+        <div class="cell">{{ form.bis_datum }}</div>
+        <div class="cell">{{ form.verguetung }}</div>
+        <div class="cell">{{ form.stufe }}</div>
+        <div class="cell">
+            <button type="submit">Speichern</button>
+            <p><a hx-get="{% url 'persfortschritt_cancel' form.instance.id %}" hx-target="#persfortschritt-{{ form.instance.id }}" hx-swap="outerHTML">Abbrechen</a></p>
+        </div>
+    </form>
+</div>
+{% endpartialdef %}
+
+{% partialdef persfortschritt_delete_confirm %}
+<div class="row" id="persfortschritt-{{ row.id }}">
+    <div class="cell">{{ row.ab_datum|date:"d.m.Y" }}</div>
+    <div class="cell">{{ row.bis_datum|date:"d.m.Y"|default:"–" }}</div>
+    <div class="cell">{{ row.verguetung }}</div>
+    <div class="cell">{{ row.stufe }}</div>
+    <div class="cell">
+        <p style="color: red;">Wirklich löschen?</p>
+        <button type="button" hx-post="{% url 'persfortschritt_delete' row.id %}" hx-target="#persfortschritt-{{ row.id }}" hx-swap="outerHTML">Ja</button>
+        <button type="button" hx-get="{% url 'persfortschritt_cancel' row.id %}" hx-target="#persfortschritt-{{ row.id }}" hx-swap="outerHTML">Nein</button>
+    </div>
+</div>
+{% endpartialdef %}
+
+
+<!-- =========================================================
+   AUS-/WEITERBILDUNG
+   ========================================================= -->
+{% partialdef ausweiterbildung_tablerow %}
+<div class="row" id="ausweiterbildung-{{ row.id }}">
+    <div class="cell">{{ row.ausbildungsziel }}</div>
+    <div class="cell">{{ row.ausbildung_bei }}</div>
+    <div class="cell">{{ row.von|date:"d.m.Y" }}</div>
+    <div class="cell">{{ row.bis|date:"d.m.Y"|default:"–" }}</div>
+    <div class="cell">
+        <p><a hx-get="{% url 'ausweiterbildung_edit' row.id %}" hx-target="#ausweiterbildung-{{ row.id }}" hx-swap="outerHTML">Bearbeiten</a></p>
+        <p><a hx-get="{% url 'ausweiterbildung_delete' row.id %}" hx-target="#ausweiterbildung-{{ row.id }}" hx-swap="outerHTML">Löschen</a></p>
+    </div>
+</div>
+{% endpartialdef %}
+
+{% partialdef ausweiterbildung_row_add %}
+<div class="row" id="ausweiterbildung-newform-{{ pers_nr }}">
+    <form hx-post="{% url 'ausweiterbildung_add' pers_nr %}" hx-target="#ausweiterbildung-newform-{{ pers_nr }}" hx-swap="outerHTML" style="display:contents">
+        {% csrf_token %}
+        <div class="cell">{{ form.ausbildungsziel }}</div>
+        <div class="cell">{{ form.ausbildung_bei }}</div>
+        <div class="cell">{{ form.von }}</div>
+        <div class="cell">{{ form.bis }}</div>
+        <div class="cell">
+            <button type="submit">Speichern</button>
+            <p><a hx-get="{% url 'personal_row_detail' pers_nr %}" hx-target="find .pers-detail-content" hx-swap="innerHTML">Abbrechen</a></p>
+        </div>
+    </form>
+</div>
+{% endpartialdef %}
+
+{% partialdef ausweiterbildung_row_edit %}
+<div class="row" id="ausweiterbildung-{{ form.instance.id }}">
+    <form hx-post="{% url 'ausweiterbildung_edit' form.instance.id %}" hx-target="#ausweiterbildung-{{ form.instance.id }}" hx-swap="outerHTML" style="display:contents">
+        {% csrf_token %}
+        <div class="cell">{{ form.ausbildungsziel }}</div>
+        <div class="cell">{{ form.ausbildung_bei }}</div>
+        <div class="cell">{{ form.von }}</div>
+        <div class="cell">{{ form.bis }}</div>
+        <div class="cell">
+            <button type="submit">Speichern</button>
+            <p><a hx-get="{% url 'ausweiterbildung_cancel' form.instance.id %}" hx-target="#ausweiterbildung-{{ form.instance.id }}" hx-swap="outerHTML">Abbrechen</a></p>
+        </div>
+    </form>
+</div>
+{% endpartialdef %}
+
+{% partialdef ausweiterbildung_delete_confirm %}
+<div class="row" id="ausweiterbildung-{{ row.id }}">
+    <div class="cell">{{ row.ausbildungsziel }}</div>
+    <div class="cell">{{ row.ausbildung_bei }}</div>
+    <div class="cell">{{ row.von|date:"d.m.Y" }}</div>
+    <div class="cell">{{ row.bis|date:"d.m.Y"|default:"–" }}</div>
+    <div class="cell">
+        <p style="color: red;">Wirklich löschen?</p>
+        <button type="button" hx-post="{% url 'ausweiterbildung_delete' row.id %}" hx-target="#ausweiterbildung-{{ row.id }}" hx-swap="outerHTML">Ja</button>
+        <button type="button" hx-get="{% url 'ausweiterbildung_cancel' row.id %}" hx-target="#ausweiterbildung-{{ row.id }}" hx-swap="outerHTML">Nein</button>
+    </div>
+</div>
+{% endpartialdef %}
+
+
+<!-- =========================================================
+   BEURTEILUNGEN
+   ========================================================= -->
+{% partialdef beurteilungen_tablerow %}
+<div class="row" id="beurteilung-{{ row.id }}">
+    <div class="cell">{{ row.datum|date:"d.m.Y" }}</div>
+    <div class="cell">{{ row.beurteilungstyp|default:"–" }}</div>
+    <div class="cell">{{ row.note|default:"–" }}</div>
+    <div class="cell">{{ row.beurteilender|default:"–" }}</div>
+    <div class="cell">
+        <p><a hx-get="{% url 'beurteilungen_edit' row.id %}" hx-target="#beurteilung-{{ row.id }}" hx-swap="outerHTML">Bearbeiten</a></p>
+        <p><a hx-get="{% url 'beurteilungen_delete' row.id %}" hx-target="#beurteilung-{{ row.id }}" hx-swap="outerHTML">Löschen</a></p>
+    </div>
+</div>
+{% endpartialdef %}
+
+{% partialdef beurteilungen_row_add %}
+<div class="row" id="beurteilungen-newform-{{ pers_nr }}">
+    <form hx-post="{% url 'beurteilungen_add' pers_nr %}" hx-target="#beurteilungen-newform-{{ pers_nr }}" hx-swap="outerHTML" style="display:contents">
+        {% csrf_token %}
+        <div class="cell">{{ form.datum }}</div>
+        <div class="cell">{{ form.beurteilungstyp }}</div>
+        <div class="cell">{{ form.note }}</div>
+        <div class="cell">{{ form.beurteilender }}</div>
+        <div class="cell">
+            <button type="submit">Speichern</button>
+            <p><a hx-get="{% url 'personal_row_detail' pers_nr %}" hx-target="find .pers-detail-content" hx-swap="innerHTML">Abbrechen</a></p>
+        </div>
+    </form>
+</div>
+{% endpartialdef %}
+
+{% partialdef beurteilungen_row_edit %}
+<div class="row" id="beurteilung-{{ form.instance.id }}">
+    <form hx-post="{% url 'beurteilungen_edit' form.instance.id %}" hx-target="#beurteilung-{{ form.instance.id }}" hx-swap="outerHTML" style="display:contents">
+        {% csrf_token %}
+        <div class="cell">{{ form.datum }}</div>
+        <div class="cell">{{ form.beurteilungstyp }}</div>
+        <div class="cell">{{ form.note }}</div>
+        <div class="cell">{{ form.beurteilender }}</div>
+        <div class="cell">
+            <button type="submit">Speichern</button>
+            <p><a hx-get="{% url 'beurteilungen_cancel' form.instance.id %}" hx-target="#beurteilung-{{ form.instance.id }}" hx-swap="outerHTML">Abbrechen</a></p>
+        </div>
+    </form>
+</div>
+{% endpartialdef %}
+
+{% partialdef beurteilungen_delete_confirm %}
+<div class="row" id="beurteilung-{{ row.id }}">
+    <div class="cell">{{ row.datum|date:"d.m.Y" }}</div>
+    <div class="cell">{{ row.beurteilungstyp|default:"–" }}</div>
+    <div class="cell">{{ row.note|default:"–" }}</div>
+    <div class="cell">{{ row.beurteilender|default:"–" }}</div>
+    <div class="cell">
+        <p style="color: red;">Wirklich löschen?</p>
+        <button type="button" hx-post="{% url 'beurteilungen_delete' row.id %}" hx-target="#beurteilung-{{ row.id }}" hx-swap="outerHTML">Ja</button>
+        <button type="button" hx-get="{% url 'beurteilungen_cancel' row.id %}" hx-target="#beurteilung-{{ row.id }}" hx-swap="outerHTML">Nein</button>
+    </div>
+</div>
+{% endpartialdef %}
+
+
+<!-- =========================================================
+   PRÜFUNGEN
+   Enthält ein FileField (zeugnis) -> Formulare brauchen
+   enctype="multipart/form-data" + hx-encoding="multipart/form-data".
+   ========================================================= -->
+{% partialdef pruefungen_tablerow %}
+<div class="row" id="pruefung-{{ row.id }}">
+    <div class="cell">{{ row.bezeichnung }}</div>
+    <div class="cell">{{ row.datum|date:"d.m.Y" }}</div>
+    <div class="cell">{{ row.ergebnis|default:"–" }}</div>
+    <div class="cell">
+        {% if row.zeugnis %}<a href="{{ row.zeugnis.url }}" target="_blank">Datei öffnen</a>{% else %}–{% endif %}
+    </div>
+    <div class="cell">
+        <p><a hx-get="{% url 'pruefungen_edit' row.id %}" hx-target="#pruefung-{{ row.id }}" hx-swap="outerHTML">Bearbeiten</a></p>
+        <p><a hx-get="{% url 'pruefungen_delete' row.id %}" hx-target="#pruefung-{{ row.id }}" hx-swap="outerHTML">Löschen</a></p>
+    </div>
+</div>
+{% endpartialdef %}
+
+{% partialdef pruefungen_row_add %}
+<div class="row" id="pruefungen-newform-{{ pers_nr }}">
+    <form hx-post="{% url 'pruefungen_add' pers_nr %}"
+          hx-target="#pruefungen-newform-{{ pers_nr }}"
+          hx-swap="outerHTML"
+          hx-encoding="multipart/form-data"
+          enctype="multipart/form-data"
+          style="display:contents">
+        {% csrf_token %}
+        <div class="cell">{{ form.bezeichnung }}</div>
+        <div class="cell">{{ form.datum }}</div>
+        <div class="cell">{{ form.ergebnis }}</div>
+        <div class="cell">{{ form.zeugnis }}</div>
+        <div class="cell">
+            <button type="submit">Speichern</button>
+            <p><a hx-get="{% url 'personal_row_detail' pers_nr %}" hx-target="find .pers-detail-content" hx-swap="innerHTML">Abbrechen</a></p>
+        </div>
+    </form>
+</div>
+{% endpartialdef %}
+
+{% partialdef pruefungen_row_edit %}
+<div class="row" id="pruefung-{{ form.instance.id }}">
+    <form hx-post="{% url 'pruefungen_edit' form.instance.id %}"
+          hx-target="#pruefung-{{ form.instance.id }}"
+          hx-swap="outerHTML"
+          hx-encoding="multipart/form-data"
+          enctype="multipart/form-data"
+          style="display:contents">
+        {% csrf_token %}
+        <div class="cell">{{ form.bezeichnung }}</div>
+        <div class="cell">{{ form.datum }}</div>
+        <div class="cell">{{ form.ergebnis }}</div>
+        <div class="cell">{{ form.zeugnis }}</div>
+        <div class="cell">
+            <button type="submit">Speichern</button>
+            <p><a hx-get="{% url 'pruefungen_cancel' form.instance.id %}" hx-target="#pruefung-{{ form.instance.id }}" hx-swap="outerHTML">Abbrechen</a></p>
+        </div>
+    </form>
+</div>
+{% endpartialdef %}
+
+{% partialdef pruefungen_delete_confirm %}
+<div class="row" id="pruefung-{{ row.id }}">
+    <div class="cell">{{ row.bezeichnung }}</div>
+    <div class="cell">{{ row.datum|date:"d.m.Y" }}</div>
+    <div class="cell">{{ row.ergebnis|default:"–" }}</div>
+    <div class="cell">{% if row.zeugnis %}<a href="{{ row.zeugnis.url }}" target="_blank">Datei öffnen</a>{% else %}–{% endif %}</div>
+    <div class="cell">
+        <p style="color: red;">Wirklich löschen?</p>
+        <button type="button" hx-post="{% url 'pruefungen_delete' row.id %}" hx-target="#pruefung-{{ row.id }}" hx-swap="outerHTML">Ja</button>
+        <button type="button" hx-get="{% url 'pruefungen_cancel' row.id %}" hx-target="#pruefung-{{ row.id }}" hx-swap="outerHTML">Nein</button>
+    </div>
+</div>
+{% endpartialdef %}
+
+
+<!-- =========================================================
+   FRÜHERE TÄTIGKEITEN
+   ========================================================= -->
+{% partialdef taetigkeitenpers_tablerow %}
+<div class="row" id="taetigkeit-{{ row.id }}">
+    <div class="cell">{{ row.arbeitgeber|default:"–" }}</div>
+    <div class="cell">{{ row.beginn_der_taet|date:"d.m.Y" }}</div>
+    <div class="cell">{{ row.ende_der_taet|date:"d.m.Y"|default:"–" }}</div>
+    <div class="cell">{{ row.aufgabengebiet|default:"–" }}</div>
+    <div class="cell">
+        <p><a hx-get="{% url 'taetigkeitenpers_edit' row.id %}" hx-target="#taetigkeit-{{ row.id }}" hx-swap="outerHTML">Bearbeiten</a></p>
+        <p><a hx-get="{% url 'taetigkeitenpers_delete' row.id %}" hx-target="#taetigkeit-{{ row.id }}" hx-swap="outerHTML">Löschen</a></p>
+    </div>
+</div>
+{% endpartialdef %}
+
+{% partialdef taetigkeitenpers_row_add %}
+<div class="row" id="taetigkeitenpers-newform-{{ pers_nr }}">
+    <form hx-post="{% url 'taetigkeitenpers_add' pers_nr %}" hx-target="#taetigkeitenpers-newform-{{ pers_nr }}" hx-swap="outerHTML" style="display:contents">
+        {% csrf_token %}
+        <div class="cell">{{ form.arbeitgeber }}</div>
+        <div class="cell">{{ form.beginn_der_taet }}</div>
+        <div class="cell">{{ form.ende_der_taet }}</div>
+        <div class="cell">{{ form.aufgabengebiet }}</div>
+        <div class="cell">
+            <button type="submit">Speichern</button>
+            <p><a hx-get="{% url 'personal_row_detail' pers_nr %}" hx-target="find .pers-detail-content" hx-swap="innerHTML">Abbrechen</a></p>
+        </div>
+    </form>
+</div>
+{% endpartialdef %}
+
+{% partialdef taetigkeitenpers_row_edit %}
+<div class="row" id="taetigkeit-{{ form.instance.id }}">
+    <form hx-post="{% url 'taetigkeitenpers_edit' form.instance.id %}" hx-target="#taetigkeit-{{ form.instance.id }}" hx-swap="outerHTML" style="display:contents">
+        {% csrf_token %}
+        <div class="cell">{{ form.arbeitgeber }}</div>
+        <div class="cell">{{ form.beginn_der_taet }}</div>
+        <div class="cell">{{ form.ende_der_taet }}</div>
+        <div class="cell">{{ form.aufgabengebiet }}</div>
+        <div class="cell">
+            <button type="submit">Speichern</button>
+            <p><a hx-get="{% url 'taetigkeitenpers_cancel' form.instance.id %}" hx-target="#taetigkeit-{{ form.instance.id }}" hx-swap="outerHTML">Abbrechen</a></p>
+        </div>
+    </form>
+</div>
+{% endpartialdef %}
+
+{% partialdef taetigkeitenpers_delete_confirm %}
+<div class="row" id="taetigkeit-{{ row.id }}">
+    <div class="cell">{{ row.arbeitgeber|default:"–" }}</div>
+    <div class="cell">{{ row.beginn_der_taet|date:"d.m.Y" }}</div>
+    <div class="cell">{{ row.ende_der_taet|date:"d.m.Y"|default:"–" }}</div>
+    <div class="cell">{{ row.aufgabengebiet|default:"–" }}</div>
+    <div class="cell">
+        <p style="color: red;">Wirklich löschen?</p>
+        <button type="button" hx-post="{% url 'taetigkeitenpers_delete' row.id %}" hx-target="#taetigkeit-{{ row.id }}" hx-swap="outerHTML">Ja</button>
+        <button type="button" hx-get="{% url 'taetigkeitenpers_cancel' row.id %}" hx-target="#taetigkeit-{{ row.id }}" hx-swap="outerHTML">Nein</button>
+    </div>
+</div>
+{% endpartialdef %}
+
+
+<!-- =========================================================
+   SONSTIGES
+   ========================================================= -->
+{% partialdef personalsonst_tablerow %}
+<div class="row" id="personalsonst-{{ row.id }}">
+    <div class="cell">{{ row.sonstiges|default:"–" }}</div>
+    <div class="cell">{{ row.zeitraum|default:"–" }}</div>
+    <div class="cell">
+        <p><a hx-get="{% url 'personalsonst_edit' row.id %}" hx-target="#personalsonst-{{ row.id }}" hx-swap="outerHTML">Bearbeiten</a></p>
+        <p><a hx-get="{% url 'personalsonst_delete' row.id %}" hx-target="#personalsonst-{{ row.id }}" hx-swap="outerHTML">Löschen</a></p>
+    </div>
+</div>
+{% endpartialdef %}
+
+{% partialdef personalsonst_row_add %}
+<div class="row" id="personalsonst-newform-{{ pers_nr }}">
+    <form hx-post="{% url 'personalsonst_add' pers_nr %}" hx-target="#personalsonst-newform-{{ pers_nr }}" hx-swap="outerHTML" style="display:contents">
+        {% csrf_token %}
+        <div class="cell">{{ form.sonstiges }}</div>
+        <div class="cell">{{ form.zeitraum }}</div>
+        <div class="cell">
+            <button type="submit">Speichern</button>
+            <p><a hx-get="{% url 'personal_row_detail' pers_nr %}" hx-target="find .pers-detail-content" hx-swap="innerHTML">Abbrechen</a></p>
+        </div>
+    </form>
+</div>
+{% endpartialdef %}
+
+{% partialdef personalsonst_row_edit %}
+<div class="row" id="personalsonst-{{ form.instance.id }}">
+    <form hx-post="{% url 'personalsonst_edit' form.instance.id %}" hx-target="#personalsonst-{{ form.instance.id }}" hx-swap="outerHTML" style="display:contents">
+        {% csrf_token %}
+        <div class="cell">{{ form.sonstiges }}</div>
+        <div class="cell">{{ form.zeitraum }}</div>
+        <div class="cell">
+            <button type="submit">Speichern</button>
+            <p><a hx-get="{% url 'personalsonst_cancel' form.instance.id %}" hx-target="#personalsonst-{{ form.instance.id }}" hx-swap="outerHTML">Abbrechen</a></p>
+        </div>
+    </form>
+</div>
+{% endpartialdef %}
+
+{% partialdef personalsonst_delete_confirm %}
+<div class="row" id="personalsonst-{{ row.id }}">
+    <div class="cell">{{ row.sonstiges|default:"–" }}</div>
+    <div class="cell">{{ row.zeitraum|default:"–" }}</div>
+    <div class="cell">
+        <p style="color: red;">Wirklich löschen?</p>
+        <button type="button" hx-post="{% url 'personalsonst_delete' row.id %}" hx-target="#personalsonst-{{ row.id }}" hx-swap="outerHTML">Ja</button>
+        <button type="button" hx-get="{% url 'personalsonst_cancel' row.id %}" hx-target="#personalsonst-{{ row.id }}" hx-swap="outerHTML">Nein</button>
+    </div>
+</div>
+{% endpartialdef %}
+
+{% partialdef personal_add_modal %}
+<div id="modal" class="modal-overlay">
+    <div class="modal-box">
+        <h2>Neuen Mitarbeiter anlegen</h2>
+        <form hx-post="{% url 'personaladd' %}" hx-target="#modal" hx-swap="outerHTML">
+            {% csrf_token %}
+            <fieldset>
+                <legend>Stammdaten</legend>
+                <label>Personalnummer {{ form.pers_nr }}</label>
+                <label>Nachname {{ form.nachname }}</label>
+                <label>Vorname {{ form.vorname }}</label>
+                <label>Geburtsdatum {{ form.geburtsdatum }}</label>
+                <label>Gemeinde {{ form.gemeinde }}</label>
+                <label>Einsatzort {{ form.einsatzort }}</label>
+            </fieldset>
+            <fieldset>
+                <legend>Kontakt</legend>
+                <label>E-Mail {{ form.e_mail }}</label>
+                <label>Telefon {{ form.telefon }}</label>
+            </fieldset>
+            <p><em>Weitere Angaben (Adresse, Familienstand, Wehrdienst, Schwerbehinderung) lassen sich nach dem Anlegen direkt in der aufgeklappten Mitarbeiterzeile ergänzen.</em></p>
+            <div class="modal-box__actions">
+                <button type="submit">Anlegen</button>
+                <a hx-get="{% url 'personal_modal_close' %}" hx-target="#modal" hx-swap="outerHTML">Abbrechen</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endpartialdef %}
+
+{% partialdef modal_close %}
+<div id="modal"></div>
+{% endpartialdef %}
+
+<!-- =========================================================
+   Hauptseite
+   ========================================================= -->
+<div id="table">
+    <h1>{{ title|default:"Personalübersicht" }}</h1>
+
+    <div class="search-bar">
+        <input type="text"
+               name="q"
+               value="{{ q }}"
+               placeholder="Nachname, Vorname oder Personalnummer suchen…"
+               hx-get="{% url 'personaluebersicht' %}"
+               hx-trigger="keyup changed delay:400ms, search"
+               hx-target="#personal-tbody"
+               hx-select="#personal-tbody"
+               hx-swap="outerHTML"
+               hx-push-url="true"
+               hx-indicator="#search-spinner">
+        <span id="search-spinner" class="htmx-indicator">Suche&hellip;</span>
+    </div>
+
+    
+    <button hx-get="{% url 'personaladd' %}" hx-target="#modal" hx-swap="outerHTML">
+            + Neuer Mitarbeiter
+    </button>
+
+    <div id="modal"></div>
+
+    <div class="table">
+        <div class="thead">
+            <div class="row">
+                <div class="cell">Nr.</div>
+                <div class="cell">Nachname</div>
+                <div class="cell">Vorname</div>
+                <div class="cell">Geburtsdatum</div>
+                <div class="cell">Gemeinde</div>
+                <div class="cell">Einsatzort</div>
+                <div class="cell"></div>
+            </div>
+        </div>
+        {% partial search_tbody %}
+    </div>
+</div>
+{% endblock %}

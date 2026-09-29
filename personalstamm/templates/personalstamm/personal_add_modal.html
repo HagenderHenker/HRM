@@ -1,0 +1,57 @@
+{# ============================================================
+   personal_add_modal.html – EIGENSTÄNDIGES FRAGMENT
+
+   Fügt zwei Partials hinzu, die in personaluebersicht.html ergänzt
+   werden müssten, um das Feature zu aktivieren:
+     - personal_add_modal   (Formular-Modal)
+     - modal_close          (leert das Modal wieder)
+
+   Zusätzlich nötig (nicht Teil dieser Datei):
+     1. Ein leeres <div id="modal"></div> irgendwo im Grund-Layout
+        (z.B. in base.html, damit hx-target="#modal" immer einen
+        gültigen Ankerpunkt findet).
+     2. Ein Trigger-Button/Link in personaluebersicht.html:
+
+        <a hx-get="{% url 'personaladd' %}" hx-target="#modal" hx-swap="outerHTML">
+            + Neuer Mitarbeiter
+        </a>
+
+     3. Optional: hx-trigger auf dem Suchfeld um "personal-added from:body"
+        ergänzen, damit die Liste sich nach dem Anlegen automatisch aktualisiert:
+
+        hx-trigger="keyup changed delay:400ms, search, personal-added from:body"
+   ============================================================ #}
+{% load partials %}
+
+{% partialdef personal_add_modal %}
+<div id="modal" class="modal-overlay">
+    <div class="modal-box">
+        <h2>Neuen Mitarbeiter anlegen</h2>
+        <form hx-post="{% url 'personaladd' %}" hx-target="#modal" hx-swap="outerHTML">
+            {% csrf_token %}
+            <fieldset>
+                <legend>Stammdaten</legend>
+                <label>Personalnummer {{ form.pers_nr }}</label>
+                <label>Nachname {{ form.nachname }}</label>
+                <label>Vorname {{ form.vorname }}</label>
+                <label>Gemeinde {{ form.gemeinde }}</label>
+                <label>Einsatzort {{ form.einsatzort }}</label>
+            </fieldset>
+            <fieldset>
+                <legend>Kontakt</legend>
+                <label>E-Mail {{ form.e_mail }}</label>
+                <label>Telefon {{ form.telefon }}</label>
+            </fieldset>
+            <p><em>Weitere Angaben (Adresse, Familienstand, Wehrdienst, Schwerbehinderung) lassen sich nach dem Anlegen direkt in der aufgeklappten Mitarbeiterzeile ergänzen.</em></p>
+            <div class="modal-box__actions">
+                <button type="submit">Anlegen</button>
+                <a hx-get="{% url 'personal_modal_close' %}" hx-target="#modal" hx-swap="outerHTML">Abbrechen</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endpartialdef %}
+
+{% partialdef modal_close %}
+<div id="modal"></div>
+{% endpartialdef %}
