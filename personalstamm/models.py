@@ -131,7 +131,7 @@ class Personalstamm(models.Model):
     def __str__(self):
         return f"{self.pers_nr} – {self.nachname}, {self.vorname}"
 
-class PersFort0
+class PersFortschritt(models.Model):
     """
     Vergütungsentwicklung im Zeitablauf (Stufenaufstiege TVöD / Beförderungen).
     """
