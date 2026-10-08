@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 # third party
     'treebeard',
+    'django_tailwind_cli',
 
 
 # local
@@ -128,5 +129,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',   # zeigt auf HR/static/
+    BASE_DIR / 'assets',  # zeigt auf HR/assets/ (für Tailwind)
 ]
 USE_THOUSAND_SEPARATOR = True
+TAILWIND_CLI_SRC_CSS = BASE_DIR / "tailwind" / "source.css"
+
+# Tailwind_CLI
+TAILWIND_CLI_USE_DAISY_UI = True

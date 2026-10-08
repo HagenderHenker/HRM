@@ -479,9 +479,10 @@ def kinder_add(request, pers_nr):
     print(pers)
 
     if request.method == 'POST':
+        #print(request.POST)
         form = KinderForm(request.POST)
         form.pers_nr = pers  # Setze die pers_nr auf das Personalstamm-Objekt
-        print(form)
+        #print(form)
         if form.is_valid():
             print("Form is valid")
             row = form.save(commit=False)

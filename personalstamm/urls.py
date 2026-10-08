@@ -35,7 +35,7 @@ from . views import BeurteilungstypenListView, BeurteilungstypenCreateView, Beur
 #from . views import personalsonst_ueb, personalsonst_add, personalsonst_edit, personalsonst_delete
 
 from . views import persfortschritt_add, persfortschritt_edit, persfortschritt_delete
-from . views import kinder_add, kinder_edit, kinder_delete
+from . views import kinder_add, kinder_edit, kinder_delete, kinder_cancel
 from . views import ausweiterbildung_add, ausweiterbildung_edit, ausweiterbildung_delete
 from . views import beurteilungen_add, beurteilungen_edit, beurteilungen_delete
 from . views import pruefungen_add, pruefungen_edit, pruefungen_delete
@@ -122,6 +122,7 @@ urlpatterns = [
     path('kinder/add/<int:pers_nr>/', kinder_add, name='kinder_add'),
     path('kinder/edit/<int:id>/', kinder_edit, name='kinder_edit'),
     path('kinder/delete/<int:id>/', kinder_delete, name='kinder_delete'),
+    path('kinder/cancel/<int:id>/', kinder_cancel, name='kinder_cancel'),
 
     # CRUD Aus- und Weiterbildung model = Ausweiterbildung
     #path('ausweiterbildung/', ausweiterbildung_ueb, name='ausweiterbildung_ueb'),
@@ -135,7 +136,8 @@ urlpatterns = [
     path('beurteilungen/add/<int:pers_nr>/', beurteilungen_add, name='beurteilungen_add'),
     path('beurteilungen/edit/<int:id>/', beurteilungen_edit, name='beurteilungen_edit'),
     path('beurteilungen/delete/<int:id>/', beurteilungen_delete, name='beurteilungen_delete'),
-    
+    path('beurteilungen/cancel/<int:id>/', beurteilungen_cancel, name='beurteilungen_cancel'),
+
     # CRUD Prüfungen model = Prüfungen
     #path('pruefungen/', pruefungen_ueb, name='pruefungen_ueb'),
     path('pruefungen/add/<int:pers_nr>/', pruefungen_add, name='pruefungen_add'),

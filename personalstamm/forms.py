@@ -1,5 +1,5 @@
 from django import forms
-from . models import VergGrp, StundenVZAE, Tabellenentgelt, Beurteilungstypen, PersFortschritt, Kinder, AusWeiterbildung, Beurteilungen, Pruefungen, TaetigkeitenPersonal, PersSonst, Personalstamm
+from . models import VergGrp, StundenVZAE, Tabellenentgelt, Beurteilungstypen, PersFortschritt, Kinder, AusWeiterbildung, Beurteilungen, Pruefungen, TaetigkeitenPersonal, PersSonst, Personalstamm, Verhaeltnistypen, IstVerguetung, Verhaeltnis
 
 class VergGrpForm(forms.ModelForm):
 
@@ -21,6 +21,11 @@ class TabellenentgeltForm(forms.ModelForm):
 class BeurteilungstypenForm(forms.ModelForm):
     class Meta:
         model = Beurteilungstypen
+        fields = '__all__'
+
+class VerhaeltnistypenForm(forms.ModelForm):
+    class Meta:
+        model = Verhaeltnistypen
         fields = '__all__'
 
 class PersFortschrittForm(forms.ModelForm):
@@ -70,3 +75,14 @@ class PersonalstammForm_shortened(forms.ModelForm):
     class Meta:
         model = Personalstamm
         fields = ['pers_nr', 'nachname', 'vorname', 'geburtsdatum', 'gemeinde', 'einsatzort']
+
+class IstVerguetungForm(forms.ModelForm):
+    class Meta:
+        model = IstVerguetung
+        fields = '__all__'
+
+class VerhaeltnisForm(forms.ModelForm):
+    class Meta:
+        model = Verhaeltnis
+        fields = '__all__'
+        

@@ -70,6 +70,20 @@ class Beurteilungstypen(models.Model):
     def __str__(self):
         return self.typ
 
+class Verhaeltnistypen(models.Model):
+    """Referenztabelle für Dienstverhältnisse (z.B. Beamter, Angestellter, Arbeiter)."""
+    verhaeltnistyp = models.CharField(max_length=50, verbose_name="Dienstverhältnis")
+    beschreibung = models.CharField(max_length=255, null=True, blank=True,
+                                   verbose_name="Beschreibung")
+    beamtet = models.BooleanField(default=False, verbose_name="Beamter")
+ 
+    class Meta:
+        db_table = 'Verhaeltnistypen'
+        verbose_name = 'Dienstverhältnistypen'
+        verbose_name_plural = 'Dienstverhältnisse'
+
+    def __str__(self):
+        return self.verhaeltnis
 
 # Personal Modelle
 
@@ -130,6 +144,28 @@ class Personalstamm(models.Model):
 
     def __str__(self):
         return f"{self.pers_nr} – {self.nachname}, {self.vorname}"
+
+class Verhaeltnis(models.Model):
+    """Referenztabelle für Dienstverhältnisse (z.B. Beamter, Angestellter, Arbeiter)."""
+    pers_nr = models.ForeignKey(Personalstamm, on_delete=models.CASCADE, to_field='pers_nr', verbose_name="Mitarbeiter")
+    verhaeltnis = models.ForeignKey(Verhaeltnistypen, on_delete=models.PROTECT, verbose_name="Dienstverhältnis")
+    von = models.DateField(verbose_name="Gültig von")
+    bis = models.DateField(null=True, blank=True, verbose_name="Gültig bis")
+    beschreibung = models.CharField(max_length=255, null=True, blank=True,
+                                   verbose_name="Beschreibung")
+    befristung = models.BooleanField(default=False, verbose_name="Befristung möglich")
+    befristung_umfang = models.IntegerField(null=True, blank=True, verbose_name="Befristung (Monate)")
+    befristung_bis = models.DateField(null=True, blank=True, verbose_name="Befristung gültig bis")
+    befristung_grund = models.CharField(max_length=255, null=True, blank=True, verbose_name="Befristungsgrund")
+    befristung_dokument = models.URLField(max_length=500, null=True, blank=True, verbose_name="Befristungsdokument (URL)")
+
+    class Meta:
+        db_table = 'Verhaeltnis'
+        verbose_name = 'Dienstverhältnis'
+        verbose_name_plural = 'Dienstverhältnisse'
+
+    def __str__(self):
+        return self.verhaeltnis
 
 class PersFortschritt(models.Model):
     """
@@ -302,3 +338,15 @@ class PersSonst(models.Model):
     class Meta:
         db_table = 'PersSonst'
         verbose_name = 'Sonstige Personalangabe'
+
+class IstVerguetung(models.Model):
+    """Aktuelle Vergütung je Mitarbeiter (berechnet aus PersFortschritt)."""
+    pers_nr = models.ForeignKey(
+        Personalstamm, on_delete=models.CASCADE,
+        to_field='pers_nr', verbose_name="Mitarbeiter"
+    )
+    vergzeitraum = models.DateTimeField(verbose_name="Lohndatum")
+    anbrutto = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Arbeitnehmer Brutto")
+    ag_sv = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Arbeitgeber Sozialversicherung")
+    ag_zvk = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Arbeitgeber Zusatzversorgung")
+    ag_sonstiges = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Arbeitgeber Sonstiges")
