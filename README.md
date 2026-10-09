@@ -4,13 +4,14 @@ KomStAR ist ein Akronym, das für kommunales Stellen, Aufgaben und Ressourcenman
 
 ## Verwendete Open Source Produkte.
 
-KomStAR ist eine Python basierte Webanwendung , die unter Zuhilfename des Django Web Framework erstellt worden ist . 
+KomStAR ist eine Python basierte Webanwendung, die unter Zuhilfename des Django Web Framework erstellt worden ist . 
 
-Die Software wurde so programmiert , dass sie grundsätzlich optimalerweise mit einer PostgresQL Datenbank funktioniert. Für die Phase der Erstellung wurde mit SQLite gearbeitet . Diese Software kann auch weiterhin mit SQLite betrieben werden , wenn man das möchte.
+Die Software wurde so programmiert , dass sie grundsätzlich optimalerweise mit einer PostgreSQL Datenbank funktioniert. Für die Phase der Erstellung wurde mit SQLite gearbeitet. Diese Software kann auch weiterhin mit SQLite betrieben werden, wenn man das möchte. Aus Sicherheitsgründen wird empfohlen die Software innerhalb eines lokalen Netzwerks - abgeschottet vom bösen, weiten Internet, zu betreiben.
 
 Die Third Party Apps , Die dieser Software zugrunde liegen , sind 
   -  Django-Tree-Beard
   -  Django-Tailwind-CLI
+  -  Tailwind CSS-Framework und DaisyUI Komponenten
   -  HTMX.
 
 ## Aufbau der Software
@@ -19,10 +20,14 @@ Es wird die standardmäßige Django Architektur verwendet.
 
 Im Ordner "komstar" befinden sich die settings.py und die grundlegenden Dateien.
 Es wurden folgende Apps angelegt:
+
 - user
 - personalstamm
 - stellenplan
 - orga
+- core
+
+
 
 
 
