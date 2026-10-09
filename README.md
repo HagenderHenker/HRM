@@ -1,6 +1,6 @@
 # KomStAR
 
-KomStAR ist ein Akronym , das für kommunales Stellen , Aufgaben und Ressourcenmanagementverfahren steht . Zweck der Software ist es , einer kleinen oder mittleren Kommune zu ermöglichen , die Stellenplanung. Die Geschäftsverteilungsplanung und die Ressourcenzuordnung in einer Software zentralisiert auszuführen .Es sind noch diverse Erweiterungen geplant , die über dieses Grundverfahren hinausgehen. So ist geplant , in einer weiteren Ausbaustufe einen Beurteilungsmanager dieser Software beizufügen .
+KomStAR ist ein Akronym, das für kommunales Stellen, Aufgaben und Ressourcenmanagementverfahren steht. Zweck der Software ist es , einer kleinen oder mittleren Kommune zu ermöglichen, die Stellenplanung, die Geschäftsverteilungsplanung und die Ressourcenzuordnung in einer Software zentralisiert auszuführen. Es sind noch diverse Erweiterungen geplant, die über dieses Grundverfahren hinausgehen. So ist geplant, in einer weiteren Ausbaustufe einen Beurteilungsmanager dieser Software beizufügen.
 
 ## Verwendete Open Source Produkte.
 
