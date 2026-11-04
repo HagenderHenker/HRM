@@ -45,7 +45,7 @@
 <!-- =========================================================
    PARTIAL: row_detail
    Inhalt des aufgeklappten Bereichs: vollständige Stammdaten
-   + alle sieben Detailtabellen. Wird NUR als Antwort auf den
+   + alle  Detailtabellen. Wird NUR als Antwort auf den
    Lazy-Load-Request gerendert (nie Teil der initialen Seite).
    ========================================================= -->
 {% partialdef row_detail %}
@@ -88,7 +88,7 @@
        hx-swap="outerHTML">Kind hinzufügen</a>
 </div>
 -->
-
+<!-- === Kinder  === -->
 <details class="collapse collapse-arrow bg-base-100 border border-base-300 mb-2">
     <summary class="collapse-title font-medium bg-green-200">
         Kinder ({{ kinder|length }})
@@ -113,12 +113,47 @@
 </details>
 
 <!-- === Vergütungsfortschritt === -->
-<div class="table detail-table">
-    <h4>Vergütungsfortschritt</h4>
-    <div class="thead">
-        <div class="row">
-            <div class="cell">Gültig ab</div>
-            <div class="cell">Gültig bis</div>
+<details class="collapse collapse-arrow bg-base-100 border border-base-300 mb-2">
+    <summary class="collapse-title font-medium bg-green-200">
+        Vergütungsfortschritt ({{ fortschritt|length }})
+    </summary>
+    <div class="collapse-content">
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Gültig ab</th>
+                    <th>Gültig bis</th>
+                    <th>Vergütungsgruppe</th>
+                    <th>Stufe</th>
+                    <th>Entgelt</th>
+                    <th>Kinderzuschlag</th>
+                    <th>Sonstige Zulagen</th>
+                    <th>VWL AG</th>
+                    <th>Gesamt Brutto</th>
+                    <th>Entgeltumwandlung</th>
+                    <th>Entgeltumwandlung Bez.</th>
+                    <th>Arbeitgeber SV</th>
+                    <th>Arbeitgeber ZVK</th>
+                    <th>Arbeitgeber Sonstiges</th>
+                    <th>Arbeitgeber Sonstiges Bez.</th>
+                    <th>Bemerkungen</th>
+                    <th>Aktionen</th>
+                </tr>
+            </thead>
+            <tbody id="persfortschritt-tbody-{{ p.pers_nr }}">
+                {% for row in fortschritt %}
+                    {% partial persfortschritt_tablerow %}
+                {% endfor %}
+                <tr id="persfortschritt-newform-{{ p.pers_nr }}"></tr>
+            </tbody>
+        </table>
+        <button class="btn btn-sm btn-outline mt-2"
+                hx-get="{% url 'persfortschritt_add' p.pers_nr %}"
+                hx-target="#persfortschritt-newform-{{ p.pers_nr }}"
+                hx-swap="outerHTML">Eintrag hinzufügen</button>
+    </div>
+</details>
+<!--
             <div class="cell">Vergütungsgruppe</div>
             <div class="cell">Stufe</div>
             <div class="cell">Aktionen</div>
@@ -134,52 +169,60 @@
        hx-target="#persfortschritt-newform-{{ p.pers_nr }}"
        hx-swap="outerHTML">Eintrag hinzufügen</a>
 </div>
-
-<!-- === Aus-/Weiterbildung === -->
-<div class="table detail-table">
-    <h4>Aus-/Weiterbildung</h4>
-    <div class="thead">
-        <div class="row">
-            <div class="cell">Ausbildungsziel</div>
-            <div class="cell">Ausbildung bei</div>
-            <div class="cell">Von</div>
-            <div class="cell">Bis</div>
-            <div class="cell">Aktionen</div>
-        </div>
+</details>
+-->
+ <!-- === Aus-/Weiterbildung === -->
+<details class="collapse collapse-arrow bg-base-100 border border-base-300 mb-2">
+    <summary class="collapse-title font-medium bg-green-200">
+        Aus-/Weiterbildung ({{ ausbildung|length }})
+    </summary>
+<div class="collapse-content">
+     <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Ausbildungsziel</th>
+                    <th>Ausbildung bei</th>
+                    <th>Von</th>
+                    <th>Bis</th>
+                    <th>Aktionen</th>
+                </tr>
+            </thead>
+            <tbody id="ausweiterbildung-tbody-{{ p.pers_nr }}">
+                {% for row in ausbildung %}
+                    {% partial ausweiterbildung_tablerow %}
+                {% endfor %}
+                <tr id="ausweiterbildung-newform-{{ p.pers_nr }}"></tr>
+            </tbody>
+        </table>
     </div>
-    <div id="ausweiterbildung-newform-{{ p.pers_nr }}"></div>
-    <div class="tbody" id="ausweiterbildung-tbody-{{ p.pers_nr }}">
-        {% for row in ausbildung %}
-            {% partial ausweiterbildung_tablerow %}
-        {% endfor %}
-    </div>
-    <a hx-get="{% url 'ausweiterbildung_add' p.pers_nr %}"
-       hx-target="#ausweiterbildung-newform-{{ p.pers_nr }}"
-       hx-swap="outerHTML">Eintrag hinzufügen</a>
-</div>
+</details>
 
 <!-- === Beurteilungen === -->
-<div class="table detail-table">
-    <h4>Beurteilungen</h4>
-    <div class="thead">
-        <div class="row">
-            <div class="cell">Datum</div>
-            <div class="cell">Typ</div>
-            <div class="cell">Note</div>
-            <div class="cell">Beurteilender</div>
-            <div class="cell">Aktionen</div>
-        </div>
+<details class="collapse collapse-arrow bg-base-100 border border-base-300 mb-2">
+    <summary class="collapse-title font-medium bg-green-200">
+        Beurteilungen ({{ beurteilungen|length }})
+    </summary>
+<div class="collapse-content">
+    <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Datum</th>
+                    <th>Typ</th>
+                    <th>Note</th>
+                    <th>Beurteilender</th>
+                    <th>Aktionen</th>
+                </tr>
+            </thead>
+            <tbody id="beurteilungen-tbody-{{ p.pers_nr }}">
+                {% for row in beurteilungen %}
+                    {% partial beurteilungen_tablerow %}
+                {% endfor %}
+                <tr id="beurteilungen-newform-{{ p.pers_nr }}"></tr>
+            </tbody>
+        </table>
     </div>
-    <div id="beurteilungen-newform-{{ p.pers_nr }}"></div>
-    <div class="tbody" id="beurteilungen-tbody-{{ p.pers_nr }}">
-        {% for row in beurteilungen %}
-            {% partial beurteilungen_tablerow %}
-        {% endfor %}
-    </div>
-    <a hx-get="{% url 'beurteilungen_add' p.pers_nr %}"
-       hx-target="#beurteilungen-newform-{{ p.pers_nr }}"
-       hx-swap="outerHTML">Eintrag hinzufügen</a>
-</div>
+</details>
+
 
 <!-- === Prüfungen === -->
 <div class="table detail-table">
@@ -268,11 +311,11 @@
 
 {% partialdef kinder_row_add %}
 <tr id="kinder-newform-{{ pers_nr }}">
-    <form >
+   
         {% csrf_token %}
-        <td class="bg-color-base-200">{{ form.name_kind }}</td>
-        <td class="bg-color-base-200">{{ form.geburtsdatum }}</td>
-        <td class="bg-color-base-200">{{ form.kinderstatus }}</td>
+        <td class="bg-base-200">{{ form.name_kind }}</td>
+        <td class="bg-base-200">{{ form.geburtsdatum }}</td>
+        <td class="bg-base-200">{{ form.kinderstatus }}</td>
         <td>
             <button type="submit" 
                 hx-post="{% url 'kinder_add' pers_nr %}" 
@@ -284,7 +327,7 @@
             <a class="btn btn-xs btn-accent" hx-get="{% url 'personal_row_detail' pers_nr %}" hx-target="find .pers-detail-content" hx-swap="innerHTML">Abbrechen</a>
 
         </td>
-    </form>
+    
 </tr>
 {% endpartialdef %}
 
@@ -292,9 +335,9 @@
 <tr class="row" id="kind-{{ form.instance.id }}">
    
         {% csrf_token %}
-        <td class="bg-color-base-200">{{ form.name_kind }}</td>
-        <td class="bg-color-base-200">{{ form.geburtsdatum }}</td>
-        <td class="bg-color-base-200">{{ form.kinderstatus }}</td>
+        <td class="bg-base-200">{{ form.name_kind }}</td>
+        <td class="bg-base-200">{{ form.geburtsdatum }}</td>
+        <td class="bg-base-200">{{ form.kinderstatus }}</td>
         <td>
             <button hx-post="{% url 'kinder_edit' form.instance.id %}" hx-target="#kind-{{ form.instance.id }}" hx-swap="outerHTML" hx-include="closest tr" class="btn btn-xs btn-primary">Speichern</button>
             <a class="btn btn-xs btn-accent" hx-get="{% url 'kinder_cancel' form.instance.id %}" hx-target="#kind-{{ form.instance.id }}" hx-swap="outerHTML">Abbrechen</a>
@@ -326,54 +369,75 @@
    PERSFORTSCHRITT
    ========================================================= -->
 {% partialdef persfortschritt_tablerow %}
-<div class="row" id="persfortschritt-{{ row.id }}">
-    <div class="cell">{{ row.ab_datum|date:"d.m.Y" }}</div>
-    <div class="cell">{{ row.bis_datum|date:"d.m.Y"|default:"–" }}</div>
-    <div class="cell">{{ row.eingruppierung }}</div>
-    <div class="cell">{{ row.stufe }}</div>
-    <div class="cell">{{ row.entgelt }}</div>
-    <div class="cell">{{ row.kinderzuschlag }}</div>
-    <div class="cell">{{ row.sonstige_zulagen }}</div>
-    <div class="cell">{{ row.vwl_ag }}</div>
-    <div class="cell">{{ row.gesamt_brutto }}</div>
-    <div class="cell">{{ row.entgeltumwandlung }}</div>
-    <div class="cell">{{ row.entgeltumwandlung_text }}</div>
-    <div class="cell">{{ row.ag_sv }}</div>
-    <div class="cell">{{ row.ag_zvk }}</div>
-    <div class="cell">{{ row.ag_sonstiges }}</div>
-    <div class="cell">{{ row.ag_sonstiges_text }}</div>
-    <div class="cell">{{ row.bemerkungen }}</div>
+<tr id="persfortschritt-{{ row.id }}">
+    <td class="cell">{{ row.ab_datum|date:"d.m.Y" }}</td>
+    <td class="cell">{{ row.bis_datum|date:"d.m.Y"|default:"–" }}</td>
+    <td class="cell">{{ row.eingruppierung }}</td>
+    <td class="cell">{{ row.stufe }}</td>
+    <td class="cell">{{ row.entgelt }}</td>
+    <td class="cell">{{ row.kinderzuschlag }}</td>
+    <td class="cell">{{ row.sonstige_zulagen }}</td>
+    <td class="cell">{{ row.vwl_ag }}</td>
+    <td class="cell">{{ row.gesamt_brutto }}</td>
+    <td class="cell">{{ row.entgeltumwandlung }}</td>
+    <td class="cell">{{ row.entgeltumwandlung_text }}</td>
+    <td class="cell">{{ row.ag_sv }}</td>
+    <td class="cell">{{ row.ag_zvk }}</td>
+    <td class="cell">{{ row.ag_sonstiges }}</td>
+    <td class="cell">{{ row.ag_sonstiges_text }}</td>
+    <td class="cell">{{ row.bemerkungen }}</td>
     
-    <div class="cell">
-        <p><a hx-get="{% url 'persfortschritt_edit' row.id %}" hx-target="#persfortschritt-{{ row.id }}" hx-swap="outerHTML">Bearbeiten</a></p>
-        <p><a hx-get="{% url 'persfortschritt_delete' row.id %}" hx-target="#persfortschritt-{{ row.id }}" hx-swap="outerHTML">Löschen</a></p>
-    </div>
-</div>
+    <td class="cell">
+        <button class="btn btn-xs btn-warning" hx-get="{% url 'persfortschritt_edit' row.id %}" hx-target="#persfortschritt-{{ row.id }}" hx-swap="outerHTML">Bearbeiten</button>
+        <button class="btn btn-xs btn-error"hx-get="{% url 'persfortschritt_delete' row.id %}" hx-target="#persfortschritt-{{ row.id }}" hx-swap="outerHTML">Löschen</button>
+    </td>
+</tr>
 {% endpartialdef %}
 
 {% partialdef persfortschritt_row_add %}
-<div class="row" id="persfortschritt-newform-{{ pers_nr }}">
-    <form hx-post="{% url 'persfortschritt_add' pers_nr %}" hx-target="#persfortschritt-newform-{{ pers_nr }}" hx-swap="outerHTML" style="display:contents">
+<tr id="persfortschritt-newform-{{ pers_nr }}">
+ 
         {% csrf_token %}
-        <div class="cell">{{ form.ab_datum }}</div>
-        <div class="cell">{{ form.bis_datum }}</div>
-        <div class="cell">{{ form.verguetung }}</div>
-        <div class="cell">{{ form.stufe }}</div>
-        <div class="cell">
+    <td class="cell">{{ form.ab_datum|date:"d.m.Y" }}</td>
+    <td class="cell">{{ form.bis_datum|date:"d.m.Y"|default:"–" }}</td>
+    <td class="cell">{{ form.eingruppierung }}</td>
+    <td class="cell">{{ form.stufe }}</td>
+    <td class="cell">{{ form.entgelt }}</td>
+    <td class="cell">{{ form.kinderzuschlag }}</td>
+    <td class="cell">{{ form.sonstige_zulagen }}</td>
+    <td class="cell">{{ form.vwl_ag }}</td>
+    <td class="cell">{{ form.gesamt_brutto }}</td>
+    <td class="cell">{{ form.entgeltumwandlung }}</td>
+    <td class="cell">{{ form.entgeltumwandlung_text }}</td>
+    <td class="cell">{{ form.ag_sv }}</td>
+    <td class="cell">{{ form.ag_zvk }}</td>
+    <td class="cell">{{ form.ag_sonstiges }}</td>
+    <td class="cell">{{ form.ag_sonstiges_text }}</td>
+    <td class="cell">{{ form.bemerkungen }}</td>
+        <td class="cell">
+             <button type="submit" 
+                hx-post="{% url 'kinder_add' pers_nr %}" 
+                hx-target="#kinder-newform-{{ pers_nr }}" 
+                hx-swap="outerHTML" 
+                hx-include="closest tr"
+                class="btn btn-xs btn-primary"
+                >Speichern</button>
+            <a class="btn btn-xs btn-accent" hx-get="{% url 'personal_row_detail' pers_nr %}" hx-target="find .pers-detail-content" hx-swap="innerHTML">Abbrechen</a>
+            
             <button type="submit">Speichern</button>
             <p><a hx-get="{% url 'personal_row_detail' pers_nr %}" hx-target="find .pers-detail-content" hx-swap="innerHTML">Abbrechen</a></p>
-        </div>
-    </form>
-</div>
+        </td>
+   
+</tr>
 {% endpartialdef %}
 
 {% partialdef persfortschritt_row_edit %}
 <div class="row" id="persfortschritt-{{ form.instance.id }}">
     <form hx-post="{% url 'persfortschritt_edit' form.instance.id %}" hx-target="#persfortschritt-{{ form.instance.id }}" hx-swap="outerHTML" style="display:contents">
         {% csrf_token %}
-        <div class="cell">{{ form.ab_datum }}</div>
-        <div class="cell">{{ form.bis_datum }}</div>
-        <div class="cell">{{ form.verguetung }}</div>
+        <td class="cell">{{ form.ab_datum }}</td>
+        <td class="cell">{{ form.bis_datum }}</td>
+        <td class="cell">{{ form.verguetung }}</td>
         <div class="cell">{{ form.stufe }}</div>
         <div class="cell">
             <button type="submit">Speichern</button>
@@ -758,8 +822,10 @@
 <div id="table">
     <h1>{{ title|default:"Personalübersicht" }}</h1>
 
-    <div class="search-bar">
+    <div class="search-bar bg-primary p-4 flex items-center gap-2">
+        <label for="search-input">Suche:</label>
         <input type="text"
+               id="search-input"
                name="q"
                value="{{ q }}"
                placeholder="Nachname, Vorname oder Personalnummer suchen…"
@@ -774,7 +840,7 @@
     </div>
 
     
-    <button hx-get="{% url 'personaladd' %}" hx-target="#modal" hx-swap="outerHTML">
+    <button class="btn btn-sm btn-outline mt-2" hx-get="{% url 'personaladd' %}" hx-target="#modal" hx-swap="outerHTML">
             + Neuer Mitarbeiter
     </button>
 
@@ -782,7 +848,7 @@
 
     <div class="table">
         <div class="thead">
-            <div class="row">
+            <div class="grid grid-cols-6 gap-4 px-3 py-2 cursor-pointer bg-base-100">
                 <div class="cell">Nr.</div>
                 <div class="cell">Nachname</div>
                 <div class="cell">Vorname</div>

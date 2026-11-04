@@ -1,6 +1,26 @@
 from django import forms
 from . models import VergGrp, StundenVZAE, Tabellenentgelt, Beurteilungstypen, PersFortschritt, Kinder, AusWeiterbildung, Beurteilungen, Pruefungen, TaetigkeitenPersonal, PersSonst, Personalstamm, Verhaeltnistypen, IstVerguetung, Verhaeltnis
 
+class DaisyUIFormMixin:
+    """Hängt passende DaisyUI-Klassen an alle Widgets, nach Typ."""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            w = field.widget
+            if isinstance(w, forms.CheckboxInput):
+                css = 'checkbox checkbox-sm bg-green-300'
+            elif isinstance(w, forms.FileInput):          # schließt ClearableFileInput ein
+                css = 'file-input file-input-sm w-full bg-green-300'
+            elif isinstance(w, forms.Select):             # schließt SelectMultiple ein
+                css = 'select select-sm w-full bg-green-300'
+            elif isinstance(w, forms.Textarea):
+                css = 'textarea textarea-sm w-full bg-green-300'
+            else:
+                css = 'input input-sm w-full bg-green-300'
+            
+            w.attrs['class'] = f"{w.attrs.get('class', '')} {css}".strip()
+
+
 class VergGrpForm(forms.ModelForm):
 
     class Meta:
@@ -28,12 +48,12 @@ class VerhaeltnistypenForm(forms.ModelForm):
         model = Verhaeltnistypen
         fields = '__all__'
 
-class PersFortschrittForm(forms.ModelForm):
+class PersFortschrittForm(DaisyUIFormMixin, forms.ModelForm):
     class Meta:
         model = PersFortschritt
         fields = ['ab_datum', 'bis_datum', 'eingruppierung', 'stufe', 'entgelt', 'kinderzuschlag', 'sonstige_zulagen', 'vwl_ag', 'gesamt_brutto', 'entgeltumwandlung', 'entgeltumwandlung_text', 'ag_sv', 'ag_zvk', 'ag_sonstiges', 'ag_sonstiges_text', 'bemerkungen']
 
-class KinderForm(forms.ModelForm):
+class KinderForm(DaisyUIFormMixin, forms.ModelForm):
     class Meta:
         model = Kinder
         fields =['name_kind', 'geburtsdatum', 'kinderstatus']

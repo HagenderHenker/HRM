@@ -34,13 +34,13 @@ from . views import BeurteilungstypenListView, BeurteilungstypenCreateView, Beur
 #from . views import taetigkeitenpers_ueb, taetigkeitenpers_add, taetigkeitenpers_edit, taetigkeitenpers_delete
 #from . views import personalsonst_ueb, personalsonst_add, personalsonst_edit, personalsonst_delete
 
-from . views import persfortschritt_add, persfortschritt_edit, persfortschritt_delete
+from . views import persfortschritt_add, persfortschritt_edit, persfortschritt_delete, persfortschritt_cancel
 from . views import kinder_add, kinder_edit, kinder_delete, kinder_cancel
-from . views import ausweiterbildung_add, ausweiterbildung_edit, ausweiterbildung_delete
-from . views import beurteilungen_add, beurteilungen_edit, beurteilungen_delete
-from . views import pruefungen_add, pruefungen_edit, pruefungen_delete
-from . views import taetigkeitenpers_add, taetigkeitenpers_edit, taetigkeitenpers_delete
-from . views import personalsonst_add, personalsonst_edit, personalsonst_delete
+from . views import ausweiterbildung_add, ausweiterbildung_edit, ausweiterbildung_delete, ausweiterbildung_cancel
+from . views import beurteilungen_add, beurteilungen_edit, beurteilungen_delete, beurteilungen_cancel
+from . views import pruefungen_add, pruefungen_edit, pruefungen_delete, pruefungen_cancel
+from . views import taetigkeitenpers_add, taetigkeitenpers_edit, taetigkeitenpers_delete, taetigkeitenpers_cancel
+from . views import personalsonst_add, personalsonst_edit, personalsonst_delete, personalsonst_cancel
 
 urlpatterns = [
     path('', personaluebersicht, name='personaluebersicht'),
